@@ -8,7 +8,7 @@ interface I {
 }
 describe("from string", () => {
   it("number", (done) => {
-    const filter = addRule({} as Filters<I>, "foo", 1);
+    const filter = addRule({} as Filters<I>, "foo", "=", 1);
 
     const f = parse<I>(toString(filter));
     const foo = f["foo"];
@@ -20,8 +20,9 @@ describe("from string", () => {
   });
   it("boolean", (done) => {
     const filter = addRule(
-      addRule({} as Filters<I>, "baz", true),
+      addRule({} as Filters<I>, "baz", "=", true),
       "bar",
+      "=",
       false
     );
     const f = parse<I>(toString(filter));
@@ -37,8 +38,9 @@ describe("from string", () => {
   });
   it("array", (done) => {
     const filter = addRule(
-      addRule({} as Filters<I>, "bar", true),
+      addRule({} as Filters<I>, "bar", "=", true),
       "bar",
+      "=",
       false
     );
     const f = parse<I>(toString(filter));
@@ -50,23 +52,23 @@ describe("from string", () => {
     done();
   });
   it("string with :", (done) => {
-    const filter = addRule({} as Filters<I>, "str", "ffsdafsa:sfsafafas");
+    const filter = addRule({} as Filters<I>, "str", "=", "bar");
     const f = parse<I>(toString(filter));
     expect(f.str).toEqual([
-      { op: "=", type: "str", value: "ffsdafsa:sfsafafas" },
+      { op: "=", type: "str", value: "bar" },
     ]);
     done();
   });
   it("ops", (done) => {
     const filter = fromArray<I>([
-      ["bar", true, "="],
-      ["foo", 1, ">"],
-      ["foo", 1, ">="],
-      ["foo", 1, "<="],
-      ["foo", 1, "<"],
-      ["foo", 1, "!="],
-      ["str", "fooo"],
-      ["str", "fooo", "~"],
+      ["bar", "=", true],
+      ["foo", ">", 1],
+      ["foo", ">=", 1],
+      ["foo", "<=", 1],
+      ["foo", "<", 1],
+      ["foo", "!=", 1],
+      ["str", "=", "fooo"],
+      ["str", "~", "fooo"],
     ]);
     const f = parse<I>(toString(filter));
 

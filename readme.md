@@ -4,31 +4,36 @@ Here is a problem that I am solving on every project - you have a table/graph wi
 
 ## Usage
 
-let`s say that we have collection of books
+let`s say that I have collection of books
 
 ```TS
 interface Book {
-  name: ""
+  name: string
   author: string,
   year: number,
   genre: string[],
-  price: number,
 }
 ```
 
-and we want to create filter which can be applied to the books collection in book store.
+And I want to know which books were published after 1981.
 
 ```TS
 import {addRule, Filters} from "@barhamon/filter";
 
-const filter = addRule({} as Filters<Book>, "author", "Frank Herbert", '=');
+const filter = addRule({} as Filters<Book>, "year", 1981, '>');
 ```
 
 If our collection is simple array usage of our filter will looks like this
 
 ```TS
 const BookCollection: Book[] = [
-  {author: "Frank Herbert", year: 1965, genre: ["science-fiction"], price: 200},
-  {author: "", }
+  {author: "Frank Herbert", name: "Dune", year: 1965, genre: ["Science Fiction"]},
+  {author: "George Orwell", name: "1984", year: 1949, genre: ["Science Fiction","Dystopia"]}, 
+  {author: "J.R.R. Tolkien", name: "The Lord of the Rings", year: 1949, genre: ["Fantasy"]},
+  {author: "Alan Moore", name: "Watchmen", year: 1987, genre: ["Science Fiction", "Graphic Novels"]},
+  {author: "William Gibson", name: "Neuromancer", year: 1984, genre: ["Science Fiction", "Cyberpunk"]},
+  {author: "Douglas Adams", name: "The Hitchhiker's Guide to the Galaxy", year: 1979, genre: ["Science Fiction"]},
+  {author: "Isaac Asimov", name: "Foundation", year: 1951, genre: ["Science Fiction"]},
+  {author: "Andy Weir", name: "The Martian", year: 2012, genre: ["Science Fiction"]},
 ]
 ```

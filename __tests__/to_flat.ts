@@ -7,7 +7,7 @@ interface I {
 
 describe("to flat", () => {
   it("happy path", (done) => {
-    const f = addRule(addRule({} as Filters<I>, "foo", 1, "="), "foo", 2, "=");
+    const f = addRule(addRule({} as Filters<I>, "foo", "=", 1), "foo", "=", 2);
 
     const flat = toFlat(f);
 
@@ -24,7 +24,7 @@ describe("to flat", () => {
     done();
   });
   it("one key", (done) => {
-    const f = addRule(addRule({} as Filters<I>, "foo", 1, "="), "bar", 2, "=");
+    const f = addRule(addRule({} as Filters<I>, "foo", "=", 1), "bar", "=", 2);
 
     const flat = toFlat(f);
 
@@ -43,14 +43,14 @@ describe("to flat", () => {
   it("more than one key key", (done) => {
     const f = addRule(
       addRule(
-        addRule(addRule({} as Filters<I>, "foo", 1, "="), "foo", 2, "="),
+        addRule(addRule({} as Filters<I>, "foo", "=", 1), "foo", "=", 2),
         "bar",
-        1,
-        "="
+        "=",
+        1
       ),
       "bar",
-      2,
-      "="
+      "=",
+      2
     );
 
     const flat = toFlat(f);

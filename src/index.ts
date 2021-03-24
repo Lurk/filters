@@ -30,8 +30,8 @@ type MarshaledRule<T extends AnyDict<T>, K extends keyof T> =
 
 interface IRule<T extends AnyDict<T>, K extends keyof T> {
   type: Types;
-  value: Value<T, K>;
   op: Ops;
+  value: Value<T, K>;
 }
 
 export type Filters<T extends AnyDict<T>> = {
@@ -41,7 +41,7 @@ export type Filters<T extends AnyDict<T>> = {
 export type FromArrayArgumentsInterface<
   T extends AnyDict<T>,
   K extends keyof T
-> = [K, Value<T, K>] | [K, Value<T, K>, Ops];
+> = [K, Ops, Value<T, K>];
 
 interface FlatRule<T extends AnyDict<T>, K extends keyof T>
   extends IRule<T, K> {
@@ -82,8 +82,8 @@ export function parse<T extends AnyDict<T>>(str: string): Filters<T> {
 export function addRule<T extends AnyDict<T>, K extends keyof T>(
   filter: Filters<T>,
   key: K,
-  value: Value<T, K>,
-  op?: Ops
+  op: Ops,
+  value: Value<T, K>
 ): Filters<T> {
   if (!op) {
     op = "=";
@@ -231,7 +231,9 @@ export function createFilterCb<T extends AnyDict<T>>(
     keys.every((key) => {
       if (element[key] !== undefined) {
         if (Array.isArray(element[key])) {
-          return (element[key] as any[]).some((element) => cb(query[key], element));
+          return (element[key] as any[]).some((element) =>
+            cb(query[key], element)
+          );
         } else {
           return cb(query[key], element[key]);
         }

@@ -10,21 +10,21 @@ describe("add rules", () => {
     number_arr: number[];
   }
   it("values empty op", (done) => {
-    const f = addRule({} as Filters<I>, "a", "string");
+    const f = addRule({} as Filters<I>, "a", "=", "string");
     expect(f["a"]).toEqual([{ op: "=", type: "str", value: "string" }]);
     done();
   });
   it("values ", (done) => {
-    const f = addRule({} as Filters<I>, "a", "string", "~");
+    const f = addRule({} as Filters<I>, "a", "~", "string");
     expect(f["a"]).toEqual([{ op: "~", type: "str", value: "string" }]);
     done();
   });
   it("values in", (done) => {
     const f = addRule(
-      addRule({} as Filters<I>, "foo", "fooo", "~"),
+      addRule({} as Filters<I>, "foo", "~", "fooo"),
       "foo",
-      "bar",
-      "~"
+      "~",
+      "bar"
     );
     expect(f["foo"]).toEqual([
       { op: "~", type: "str", value: "fooo" },
@@ -37,11 +37,13 @@ describe("add rules", () => {
   it("property is array", (done) => {
     const f = addRule(
       addRule(
-        addRule({} as Filters<I>, "string_arr", "bar"),
+        addRule({} as Filters<I>, "string_arr","=", "bar"),
         "boolean_arr",
+        "=",
         true
       ),
       "number_arr",
+      "=",
       1
     );
     expect(f["string_arr"]).toEqual([{ op: "=", type: "str", value: "bar" }]);
