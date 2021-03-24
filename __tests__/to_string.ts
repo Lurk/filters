@@ -59,25 +59,4 @@ describe("to string", () => {
     );
     done();
   });
-  it("contains filter on non string rule", (done) => {
-    expect(() => addRule({} as Filters<I>, "baz", "~", true)).toThrow(
-      'only string fields can be filtered by "contain (~)" filter'
-    );
-    done();
-  });
-  it(">,<, >=, <= filters on non int rule", (done) => {
-    expect(() => addRule({} as Filters<I>, "baz", ">", true)).toThrow(
-      'only number fields can be filtered by "greater than (>)" filter'
-    );
-    expect(() => addRule({} as Filters<I>, "baz", "<", true)).toThrow(
-      'only number fields can be filtered by "lower than (<)" filter'
-    );
-    expect(() => addRule({} as Filters<I>, "baz", ">=", true)).toThrow(
-      'only number fields can be filtered by "greater or equal than (>=)" filter'
-    );
-    expect(() => addRule({} as Filters<I>, "baz", "<=", true)).toThrow(
-      'only number fields can be filtered by "lower or equal than (<=)" filter'
-    );
-    done();
-  });
 });
