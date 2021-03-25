@@ -120,12 +120,16 @@ function addOrUpdateRule<T extends AnyDict<T>, K extends keyof T>(
   rule: IRule<T, K>
 ): Filters<T> {
   if (filters[key] && Array.isArray(filters[key])) {
-    //TODO WTF typescript
-    (filters[key] as IRule<T, K>[]).push(rule);
+    return {
+      ...filters,
+      [key]: [...(filters[key] as IRule<T, K>[]), rule],
+    };
   } else {
-    filters[key] = [rule];
+    return {
+      ...filters,
+      [key]: [rule],
+    };
   }
-  return filters;
 }
 
 export function fromString<T extends AnyDict<T>>(str: string): Filters<T> {
@@ -200,7 +204,7 @@ export function toString<T extends AnyDict<T>, K extends keyof T>(
 ) {
   return JSON.stringify(
     Object.keys(filter).reduce((acc: Dict<MarshaledRule<T, K>[]>, key) => {
-      //TODO wtf typescript 2
+      //TODO wtf typescript
       acc[key] = (filter[key as K] as IRule<T, K>[]).map((r) =>
         r.op === "=" ? [r.value] : [r.value, r.op]
       );
