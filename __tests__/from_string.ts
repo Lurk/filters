@@ -54,9 +54,7 @@ describe("from string", () => {
   it("string with :", (done) => {
     const filter = addRule({} as Filters<I>, "str", "=", "bar");
     const f = fromString<I>(toString(filter));
-    expect(f.str).toEqual([
-      { op: "=", type: "str", value: "bar" },
-    ]);
+    expect(f.str).toEqual([{ op: "=", type: "str", value: "bar" }]);
     done();
   });
   it("ops", (done) => {

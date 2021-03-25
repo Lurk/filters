@@ -1,6 +1,7 @@
 # Filter
 
-Here is a problem that I am solving on every project - I have a table/graph with some custom filters. I need to send a query to the backend so it can query a database. Also, I should have the ability to use it as the callback to the Array.filter for cases when data already there. Also, it should be possible to send a link to the current table/graph with filters applied, so it should be serializable to string.
+Here is a problem that I am solving on almost every project - I have a table/graph with some custom filters. I need to send a query to the backend so it can query a database. Also, I should have the ability to use it as the callback to the Array.filter for cases when data already there. Also, it should be possible to send a link to the current table/graph with filters applied.
+
 
 ## Usage
 
@@ -76,19 +77,43 @@ api.get('/books/', async (req, res) =>{
     res.json(books);
 })
 ```
-
-it should be fairly easy add converters to any database, and for any language you are using.
+and I also want to update the filter param in the browser URL to be able to send the link for this page to my colleague.
+```TS
+const { protocol, host, pathname, search } = window.location;
+const params = new URLSearchParams(search);
+params.set("filter", toQueryString(filter));
+const newUrl = `${protocol}//${host}${pathname}?${params.toString()}`;
+window.history.replaceState({ path: newUrl }, "", newUrl);
+```
 
 ## API
+
+### Value types
+Value can be either string, number, or boolean type.
+
+### Operations
+
+Filters package uses this operations
+for every type of value:
+* = - equals
+* != - not equals
+
+for number values:
+* \> - bigger than
+* < - less than
+* \>= - greater than or equal to
+* <= - less than or equal to
+
+for string values:
+* ~ - contains
 
 ### addRule
 adds rule to existing filters
 
 usage:
 ```TS
-const filter = addRule({} as Filters<Book>, "year", '>', 1981);
-
-const filter2 = addRule(filter, )
+const filterByYear = addRule({} as Filters<Book>, "year", ">", 1981);
+const filterByYearAndGenre = addRule(filter, "genre", "~", "ict")
 ```
 
 ### fromArray
@@ -96,11 +121,69 @@ creates new filter from array
 
 usage:
 ```TS
-
+const filterByYearAndGenre = fromArray([
+  ["year", ">", 1981],
+  ["genre", "~", "ict"]
+]);
 ```
-  fromString - creates new filter from string
-  fromQueryString - creates new filter from url encoded string,
-  toMongoQuery - creates mongoDb query from filter,
-  toString - creates JSON.string from filter,
-  toQueryString - creates url encoded string from filter,
-  toFilterCb - creates callback for Array.filter from filter
+### fromString
+creates new filter from string
+
+usage:
+```TS
+const filterByYearAndGenre = fromString('{"year":[[1981,">"]],"genre":[["ict","~"]]}')
+```
+### fromQueryString
+creates new filter from url encoded string,
+usage:
+```TS
+const filterByYearAndGenre = fromQueryString('%7B%22year%22%3A%5B%5B1981%2C%22%3E%22%5D%5D%2C%22genre%22%3A%5B%5B%22ict%22%2C%22~%22%5D%5D%7D')
+```
+### toMongoQuery
+creates mongoDb query from filter,
+usage:
+```TS
+const query = toMongoQuery(filterByYearAndGenre);
+```
+### toString
+creates JSON.string from filter with this format
+```
+{"key":[[value, operation]]} or if operation is = {"key":[[value]]}
+```
+for example:
+```TS
+    console.log(
+      toString(
+        fromArray([
+          ["year", "=", 1965],
+          ["year", ">", 1982],
+          ["genre", "~", "ict"],
+        ])
+      )
+    );
+```
+will output
+```JSON
+{
+  year: [[1965], [1982, ">"]],
+  genre: [["ict", "~"]],
+}
+```
+
+usage:
+```TS
+const string = toString(filterByYearAndGenre);
+```
+### toQueryString
+creates url encoded string from filter
+usage:
+```TS
+const string = toQueryString(filterByYearAndGenre);
+```
+
+### toFilterCb
+creates callback for Array.filter from filter
+usage:
+```TS
+const cb = toFilterCb(filterByYearAndGenre);
+```

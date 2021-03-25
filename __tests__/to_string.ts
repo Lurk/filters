@@ -8,17 +8,17 @@ interface I {
 
 describe("to string", () => {
   it("number", (done) => {
-    const f = addRule({} as Filters<I>, "foo",'=', 1);
+    const f = addRule({} as Filters<I>, "foo", "=", 1);
     expect(toString(f)).toBe('{"foo":[[1]]}');
     done();
   });
   it("string", (done) => {
-    const f = addRule({} as Filters<I>, "bar", '=', "fooo");
+    const f = addRule({} as Filters<I>, "bar", "=", "fooo");
     expect(toString(f)).toBe('{"bar":[["fooo"]]}');
     done();
   });
   it("boolean", (done) => {
-    const f = addRule({} as Filters<I>, "baz","=", true);
+    const f = addRule({} as Filters<I>, "baz", "=", true);
     expect(toString(f)).toBe('{"baz":[[true]]}');
     done();
   });
@@ -45,12 +45,12 @@ describe("to string", () => {
   it("different ops", (done) => {
     const f = fromArray([
       ["baz", "=", true],
-      ["foo", '>', 1],
+      ["foo", ">", 1],
       ["foo", ">=", 1],
       ["foo", "<=", 1],
       ["foo", "<", 1],
       ["foo", "!=", 1],
-      ["bar","=", "fooo"],
+      ["bar", "=", "fooo"],
       ["bar", "~", "fooo"],
     ]);
 
