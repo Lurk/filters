@@ -1,4 +1,4 @@
-import { addRule, toString, parse, Filters, fromArray } from "../src";
+import { addRule, toString, fromString, Filters, fromArray } from "../src";
 
 interface I {
   foo: number;
@@ -10,7 +10,7 @@ describe("from string", () => {
   it("number", (done) => {
     const filter = addRule({} as Filters<I>, "foo", "=", 1);
 
-    const f = parse<I>(toString(filter));
+    const f = fromString<I>(toString(filter));
     const foo = f["foo"];
     expect(foo).toHaveLength(1);
     if (foo) {
@@ -25,7 +25,7 @@ describe("from string", () => {
       "=",
       false
     );
-    const f = parse<I>(toString(filter));
+    const f = fromString<I>(toString(filter));
     expect(f.baz).toHaveLength(1);
     if (f.baz) {
       expect(f.baz[0]).toEqual({ op: "=", type: "bool", value: true });
@@ -43,7 +43,7 @@ describe("from string", () => {
       "=",
       false
     );
-    const f = parse<I>(toString(filter));
+    const f = fromString<I>(toString(filter));
     expect(f.bar).toHaveLength(2);
     if (f.bar) {
       expect(f.bar[0]).toEqual({ op: "=", type: "bool", value: true });
@@ -53,7 +53,7 @@ describe("from string", () => {
   });
   it("string with :", (done) => {
     const filter = addRule({} as Filters<I>, "str", "=", "bar");
-    const f = parse<I>(toString(filter));
+    const f = fromString<I>(toString(filter));
     expect(f.str).toEqual([
       { op: "=", type: "str", value: "bar" },
     ]);
@@ -70,7 +70,7 @@ describe("from string", () => {
       ["str", "=", "fooo"],
       ["str", "~", "fooo"],
     ]);
-    const f = parse<I>(toString(filter));
+    const f = fromString<I>(toString(filter));
 
     expect(f.foo).toEqual([
       { op: ">", type: "number", value: 1 },

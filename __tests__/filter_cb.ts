@@ -1,4 +1,4 @@
-import { addRule, createFilterCb, Filters } from "../src";
+import { addRule, toFilterCb, Filters } from "../src";
 
 interface I {
   number: number;
@@ -17,35 +17,35 @@ const t: I = {
 describe("filter cb", () => {
   it("boolean", (done) => {
     expect(
-      createFilterCb(addRule({} as Filters<I>, "boolean", "=", false))(t)
+      toFilterCb(addRule({} as Filters<I>, "boolean", "=", false))(t)
     ).toBeTruthy();
     expect(
-      createFilterCb(addRule({} as Filters<I>, "boolean", "=", true))(t)
+      toFilterCb(addRule({} as Filters<I>, "boolean", "=", true))(t)
     ).toBeFalsy();
     done();
   });
 
   it("number", (done) => {
     expect(
-      createFilterCb(addRule({} as Filters<I>, "number", "=", 5))(t)
+      toFilterCb(addRule({} as Filters<I>, "number", "=", 5))(t)
     ).toBeTruthy();
     expect(
-      createFilterCb(addRule({} as Filters<I>, "number", "=", 2))(t)
+      toFilterCb(addRule({} as Filters<I>, "number", "=", 2))(t)
     ).toBeFalsy();
     expect(
-      createFilterCb(addRule({} as Filters<I>, "number", "<", 8))(t)
+      toFilterCb(addRule({} as Filters<I>, "number", "<", 8))(t)
     ).toBeTruthy();
     expect(
-      createFilterCb(addRule({} as Filters<I>, "number", "<=", 5))(t)
+      toFilterCb(addRule({} as Filters<I>, "number", "<=", 5))(t)
     ).toBeTruthy();
     expect(
-      createFilterCb(addRule({} as Filters<I>, "number", ">=", 0))(t)
+      toFilterCb(addRule({} as Filters<I>, "number", ">=", 0))(t)
     ).toBeTruthy();
     expect(
-      createFilterCb(addRule({} as Filters<I>, "number", ">", 0))(t)
+      toFilterCb(addRule({} as Filters<I>, "number", ">", 0))(t)
     ).toBeTruthy();
     expect(
-      createFilterCb(
+      toFilterCb(
         addRule(addRule({} as Filters<I>, "number", ">", 0), "number", "<", 4)
       )(t)
     ).toBeFalsy();
@@ -54,17 +54,17 @@ describe("filter cb", () => {
   });
   it("number_arr", (done) => {
     expect(
-      createFilterCb(addRule({} as Filters<I>, "number_arr", "=", 5))(t)
+      toFilterCb(addRule({} as Filters<I>, "number_arr", "=", 5))(t)
     ).toBeTruthy();
     expect(
-      createFilterCb(addRule({} as Filters<I>, "number_arr", "=", 4))(t)
+      toFilterCb(addRule({} as Filters<I>, "number_arr", "=", 4))(t)
     ).toBeFalsy();
     done();
   });
 
   it("in", (done) => {
     expect(
-      createFilterCb(
+      toFilterCb(
         addRule(addRule({} as Filters<I>, "number", "=", 2), "number", "=", 5)
       )(t)
     ).toBeTruthy();
@@ -72,25 +72,25 @@ describe("filter cb", () => {
   });
   it("string", (done) => {
     expect(
-      createFilterCb(addRule({} as Filters<I>, "string", "=", "foo"))(t)
+      toFilterCb(addRule({} as Filters<I>, "string", "=", "foo"))(t)
     ).toBeTruthy();
     expect(
-      createFilterCb(addRule({} as Filters<I>, "string", "~", "o"))(t)
+      toFilterCb(addRule({} as Filters<I>, "string", "~", "o"))(t)
     ).toBeTruthy();
     done();
   });
   it("!=", (done) => {
     expect(
-      createFilterCb(addRule({} as Filters<I>, "string", "!=", "0"))(t)
+      toFilterCb(addRule({} as Filters<I>, "string", "!=", "0"))(t)
     ).toBeTruthy();
     expect(
-      createFilterCb(addRule({} as Filters<I>, "boolean", "!=", true))(t)
+      toFilterCb(addRule({} as Filters<I>, "boolean", "!=", true))(t)
     ).toBeTruthy();
     done();
   });
   it("!= and in", (done) => {
     expect(
-      createFilterCb(
+      toFilterCb(
         addRule(
           addRule(
             addRule({} as Filters<I>, "number", "=", 5),
