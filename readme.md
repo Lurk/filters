@@ -1,6 +1,6 @@
 # Filter
 
-Javascript library to deal with data filters in generic way.
+Typescript library to deal with data filter options in a generic way.
 
 ## Motivation
 
@@ -159,6 +159,7 @@ usage:
 ```TS
 const string = toQueryString(filterByYearAndGenre);
 ```
+Be aware of url length limitation. 
 ### toMongoQuery
 creates mongoDb query from filter,
 usage:
