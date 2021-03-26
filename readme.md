@@ -1,14 +1,11 @@
 # Filter
 
-Typescript library to deal with data filter options in a generic way.
-
-## Motivation
-
-Here is a problem that I am solving on almost every project - I have some generic table/graph, and I need a generic way to pass around data filtering options. 
+Library to deal with the data filter options in a generic way. 
+Written in Typescript with zero dependencies.
 
 ## Usage
 
-let`s say that I have collection of books
+let`s say that we have collection of books
 
 ```TS
 interface Book {
@@ -19,7 +16,7 @@ interface Book {
 }
 ```
 
-And I want to know which books were published after 1981.
+And we want to know which books were published after 1981.
 
 ```TS
 import {addRule, Filters, createFilterCb, Operators} from "@barhamon/filter";
@@ -27,7 +24,7 @@ import {addRule, Filters, createFilterCb, Operators} from "@barhamon/filter";
 const filter = addRule({} as Filters<Book>, "year", Operators.greaterThan, 1981);
 ```
 
-If my collection is simple array usage of filter will look like this
+If our collection is simple array usage of filter will look like this
 
 ```TS
 const bookCollection: Book[] = [
@@ -44,7 +41,7 @@ const bookCollection: Book[] = [
 const booksPublishedAfter1981 =  bookCollection.filter(createFilterCb(filter));
 ```
 
-if I want to send filter as GET param to my API
+if we want to send filter as GET param to our API
 
 ```TS
 import {addRule, Filters, toQueryString, Operators} from "@barhamon/filter";
@@ -61,7 +58,7 @@ const filter = addRule({} as Filters<Book>, "year", Operators.greaterThan, 1981)
 await fetch(`https://apihost.com/books/?filter=${toQueryString(filter)}`)
 ```
 
-And let`s say on the backend I have ExpressJS and MongoDB
+And let`s say on the backend we have ExpressJS and MongoDB
 ```TS
 //assuming import {api, db} from './server';
 import {Filters, parse, toMongoQuery} from "@barhamon/filter";
@@ -79,7 +76,7 @@ api.get('/books/', async (req, res) =>{
     res.json(books);
 })
 ```
-and I also want to update the filter param in the browser URL to be able to send the link for this page to my colleague.
+and we also want to update the filter param in the browser URL to be able to send the link for this page to our colleague.
 ```TS
 const { protocol, host, pathname, search } = window.location;
 const params = new URLSearchParams(search);
