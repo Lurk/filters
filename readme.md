@@ -1,7 +1,10 @@
 # Filter
 
-Here is a problem that I am solving on almost every project - I have a table/graph with some custom filters. I need to send a query to the backend so it can query a database. Also, I should have the ability to use it as the callback to the Array.filter for cases when data already there. Also, it should be possible to send a link to the current table/graph with filters applied.
+Javascript library to deal with data filters in generic way.
 
+## Motivation
+
+Here is a problem that I am solving on almost every project - I have some generic table/graph, and I need a generic way to pass around data filtering options. 
 
 ## Usage
 
