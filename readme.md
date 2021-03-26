@@ -19,9 +19,9 @@ interface Book {
 And I want to know which books were published after 1981.
 
 ```TS
-import {addRule, Filters, createFilterCb} from "@barhamon/filter";
+import {addRule, Filters, createFilterCb, Operators} from "@barhamon/filter";
 
-const filter = addRule({} as Filters<Book>, "year", '>', 1981);
+const filter = addRule({} as Filters<Book>, "year", Operators.greaterThan, 1981);
 ```
 
 If my collection is simple array usage of filter will look like this
@@ -44,7 +44,7 @@ const booksPublishedAfter1981 =  bookCollection.filter(createFilterCb(filter));
 if I want to send filter as GET param to my API
 
 ```TS
-import {addRule, Filters, toQueryString} from "@barhamon/filter";
+import {addRule, Filters, toQueryString, Operators} from "@barhamon/filter";
 
 interface Book {
   name: string
@@ -53,10 +53,9 @@ interface Book {
   genre: string[],
 }
 
-const filter = addRule({} as Filters<Book>, "year", '>', 1981);
+const filter = addRule({} as Filters<Book>, "year", Operators.greaterThan, 1981);
 
-const queryString = toQueryString(filter);
-await fetch(`https://apihost.com/books/?filter=${queryString}`)
+await fetch(`https://apihost.com/books/?filter=${toQueryString(filter)}`)
 ```
 
 And let`s say on the backend I have ExpressJS and MongoDB
@@ -83,7 +82,7 @@ const { protocol, host, pathname, search } = window.location;
 const params = new URLSearchParams(search);
 params.set("filter", toQueryString(filter));
 const newUrl = `${protocol}//${host}${pathname}?${params.toString()}`;
-window.history.replaceState({ path: newUrl }, "", newUrl);
+window.history.push({ path: newUrl }, "", newUrl);
 ```
 
 ## API
@@ -91,29 +90,27 @@ window.history.replaceState({ path: newUrl }, "", newUrl);
 ### Value types
 Value can be either string, number, or boolean type.
 
-### Operations
-
-Filters package uses this operations
+### Operators
+Filters package uses this comparison query operators
 for every type of value:
-* = - equals
-* != - not equals
 
-for number values:
-* \> - bigger than
-* < - less than
-* \>= - greater than or equal to
-* <= - less than or equal to
+0. equals
+1. not equals
+2. greater than
+3. less than
+4. greater than or equal to
+5. less than or equal to
+6. contains
 
-for string values:
-* ~ - contains
+there is Operators enum, so you don`t need to remember all this.
 
 ### addRule
 adds rule to existing filters
 
 usage:
 ```TS
-const filterByYear = addRule({} as Filters<Book>, "year", ">", 1981);
-const filterByYearAndGenre = addRule(filter, "genre", "~", "ict")
+const filterByYear = addRule({} as Filters<Book>, "year", Operators.greaterThan, 1981);
+const filterByYearAndGenre = addRule(filter, "genre", Operators.contains, "ict")
 ```
 ### removeRule
 removes rule from existing filters
@@ -123,60 +120,31 @@ usage:
 const filterByYear = removeRule(filterByYearAndGenre, "genre");
 ```
 
-
-### fromArray
-creates new filter from array
-
-usage:
-```TS
-const filterByYearAndGenre = fromArray([
-  ["year", ">", 1981],
-  ["genre", "~", "ict"]
-]);
-```
-### fromString
-creates new filter from string
-
-usage:
-```TS
-const filterByYearAndGenre = fromString('{"year":[[1981,">"]],"genre":[["ict","~"]]}')
-```
-### fromQueryString
-creates new filter from url encoded string,
-usage:
-```TS
-const filterByYearAndGenre = fromQueryString('%7B%22year%22%3A%5B%5B1981%2C%22%3E%22%5D%5D%2C%22genre%22%3A%5B%5B%22ict%22%2C%22~%22%5D%5D%7D')
-```
-### toMongoQuery
-creates mongoDb query from filter,
-usage:
-```TS
-const query = toMongoQuery(filterByYearAndGenre);
-```
 ### toString
 creates JSON.string from filter with this format
 ```
-{"key":[[value, operation]]} or if operation is = {"key":[[value]]}
+{"key":[[value, operator]]} or if operator is Operators.equal {"key":[[value]]}
 ```
 for example:
 ```TS
     console.log(
       toString(
         fromArray([
-          ["year", "=", 1965],
-          ["year", ">", 1982],
-          ["genre", "~", "ict"],
+          ["year", Operators.equal, 1965],
+          ["year", Operators.greaterThan, 1982],
+          ["genre", Operators.contains, "ict"],
         ])
       )
     );
 ```
-will output
+will output string: '{"year":[\[1965],[1982,2]],"genre":[\["ict",6]]}'
 ```JSON
 {
-  year: [[1965], [1982, ">"]],
-  genre: [["ict", "~"]],
+  "year": [[1965], [1982, 2]],
+  "genre": [["ict", 6]],
 }
 ```
+
 
 usage:
 ```TS
@@ -188,10 +156,39 @@ usage:
 ```TS
 const string = toQueryString(filterByYearAndGenre);
 ```
-
+### toMongoQuery
+creates mongoDb query from filter,
+usage:
+```TS
+const query = toMongoQuery(filterByYearAndGenre);
+```
 ### toFilterCb
 creates callback for Array.filter from filter
 usage:
 ```TS
 const cb = toFilterCb(filterByYearAndGenre);
+```
+
+### fromArray
+creates new filter from array
+
+usage:
+```TS
+const filterByYearAndGenre = fromArray([
+  ["year", Operators.greaterThan, 1981],
+  ["genre", Operators.contains, "ict"]
+]);
+```
+### fromString
+creates new filter from string
+
+usage:
+```TS
+const filterByYearAndGenre = fromString('{"year":[[1981,2]],"genre":[["ict":6]]}')
+```
+### fromQueryString
+creates new filter from url encoded string,
+usage:
+```TS
+const filterByYearAndGenre = fromQueryString('%7B%22year%22%3A%5B%5B1981%2C2%5D%5D%2C%22genre%22%3A%5B%5B%22ict%22%2C6%5D%5D%7D')
 ```

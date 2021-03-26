@@ -26,43 +26,51 @@ export type Dict<T> = { [key: string]: T | undefined };
 
 export type Values = string | number | boolean;
 
-export type Ops = "=" | "!=" | ">" | "<" | ">=" | "<=" | "~";
+export enum Operators {
+  equal = 0,
+  notEqual = 1,
+  greaterThan = 2,
+  lessThan = 3,
+  greaterThanOrEqualTo = 4,
+  lessThanOrEqualTo = 5,
+  contains = 6
+}
 
-export function isOp(val: any): val is Ops {
+export function isOp(val: any): val is Operators {
   return (
-    val === "=" ||
-    val === "!=" ||
-    val === ">" ||
-    val === "<" ||
-    val === ">=" ||
-    val === "<=" ||
-    val === "~"
+    val === Operators.equal ||
+    val === Operators.notEqual ||
+    val === Operators.greaterThan ||
+    val === Operators.lessThan ||
+    val === Operators.greaterThanOrEqualTo ||
+    val === Operators.lessThanOrEqualTo ||
+    val === Operators.contains
   );
 }
 
-export function toOp(val: string): Ops {
+export function toOp(val: number): Operators {
   if (!isOp(val)) {
     throw new Error(`unknown op: "${val}"`);
   }
   return val;
 }
 
-export function opToText(op: Ops) {
+export function opToText(op: Operators) {
   switch (op) {
-    case "~":
+    case Operators.contains:
       return "contain (~)";
-    case "=":
+    case Operators.equal:
       return "equal (=)";
-    case "!=":
+    case Operators.notEqual:
       return "not equal (!=)";
-    case ">":
+    case Operators.greaterThan:
       return "greater than (>)";
-    case "<":
-      return "lower than (<)";
-    case ">=":
-      return "greater or equal than (>=)";
-    case "<=":
-      return "lower or equal than (<=)";
+    case Operators.lessThan:
+      return "less than (<)";
+    case Operators.greaterThanOrEqualTo:
+      return "greater than or equal to (>=)";
+    case Operators.lessThanOrEqualTo:
+      return "less than or equal to (<=)";
     default:
       throw new Error(`unknown operation "${op}"`);
   }
@@ -96,12 +104,12 @@ type Value<T extends AnyDict<T>, K extends keyof T> = T[K] extends string[]
   : T[K];
 
 type MarshaledRule<T extends AnyDict<T>, K extends keyof T> =
-  | [Value<T, K>, Ops]
+  | [Value<T, K>, Operators]
   | [Value<T, K>];
 
 interface IRule<T extends AnyDict<T>, K extends keyof T> {
   type: Types;
-  op: Ops;
+  op: Operators;
   value: Value<T, K>;
 }
 
@@ -112,7 +120,7 @@ export type Filters<T extends AnyDict<T>> = {
 export type FromArrayArgumentsInterface<
   T extends AnyDict<T>,
   K extends keyof T
-> = [K, Ops, Value<T, K>];
+> = [K, Operators, Value<T, K>];
 
 function addOrUpdateRule<T extends AnyDict<T>, K extends keyof T>(
   filters: Filters<T>,
@@ -141,7 +149,7 @@ export function fromString<T extends AnyDict<T>>(str: string): Filters<T> {
         return addOrUpdateRule(acc2, key as keyof T, {
           type,
           value: chunk[0],
-          op: toOp(chunk[1] || "="),
+          op: toOp(chunk[1] || Operators.equal),
         });
       },
       acc
@@ -156,18 +164,18 @@ export function fromQueryString<T extends AnyDict<T>>(str: string): Filters<T> {
 export function addRule<T extends AnyDict<T>, K extends keyof T>(
   filter: Filters<T>,
   key: K,
-  op: Ops,
+  op: Operators,
   value: Value<T, K>
 ): Filters<T> {
   if (!op) {
-    op = "=";
+    op = Operators.equal;
   }
 
-  if (op === "~" && !isString(value)) {
+  if (op === Operators.contains && !isString(value)) {
     throw new Error(
       `only string fields can be filtered by "${opToText(op)}" filter`
     );
-  } else if ([">", "<", ">=", "<="].includes(op) && !isNumeric(value)) {
+  } else if ([Operators.greaterThan, Operators.lessThan, Operators.greaterThanOrEqualTo, Operators.lessThanOrEqualTo].includes(op) && !isNumeric(value)) {
     throw new Error(
       `only number fields can be filtered by "${opToText(op)}" filter`
     );
@@ -204,7 +212,7 @@ export function toString<T extends AnyDict<T>, K extends keyof T>(
     Object.keys(filter).reduce((acc: Dict<MarshaledRule<T, K>[]>, key) => {
       //TODO wtf typescript
       acc[key] = (filter[key as K] as IRule<T, K>[]).map((r) =>
-        r.op === "=" ? [r.value] : [r.value, r.op]
+        r.op === Operators.equal ? [r.value] : [r.value, r.op]
       );
       return acc;
     }, {})
@@ -224,17 +232,17 @@ export function toMongoQuery<T extends AnyDict<T>>(
     const rule = filter[key as keyof T];
     if (rule) {
       if (rule.length === 1) {
-        if (rule[0].op === "!=") {
+        if (rule[0].op === Operators.notEqual) {
           acc[key as keyof T] = { $ne: rule[0].value };
-        } else if (rule[0].op === ">") {
+        } else if (rule[0].op === Operators.greaterThan) {
           acc[key as keyof T] = { $gt: rule[0].value };
-        } else if (rule[0].op === "<") {
+        } else if (rule[0].op === Operators.lessThan) {
           acc[key as keyof T] = { $lt: rule[0].value };
-        } else if (rule[0].op === ">=") {
+        } else if (rule[0].op === Operators.greaterThanOrEqualTo) {
           acc[key as keyof T] = { $gte: rule[0].value };
-        } else if (rule[0].op === "<=") {
+        } else if (rule[0].op === Operators.lessThanOrEqualTo) {
           acc[key as keyof T] = { $lte: rule[0].value };
-        } else if (rule[0].op === "~") {
+        } else if (rule[0].op === Operators.contains) {
           acc[key as keyof T] = {
             $regex: `.*${escapeRegExp(String(rule[0].value))}.*`,
             $options: "gi",
@@ -245,23 +253,23 @@ export function toMongoQuery<T extends AnyDict<T>>(
       } else if (rule.length > 1) {
         acc[key as keyof T] = rule.reduce(
           (field: { [key: string]: any }, v) => {
-            if (v.op === "=") {
+            if (v.op === Operators.equal) {
               field["$in"] = field["$in"]
                 ? [...field["$in"], v.value]
                 : [v.value];
-            } else if (v.op === "!=") {
+            } else if (v.op === Operators.notEqual) {
               field["$nin"] = field["$nin"]
                 ? [...field["$nin"], v.value]
                 : [v.value];
-            } else if (v.op === ">") {
+            } else if (v.op === Operators.greaterThan) {
               field["$gt"] = v.value;
-            } else if (v.op === "<") {
+            } else if (v.op === Operators.lessThan) {
               field["$lt"] = v.value;
-            } else if (v.op === ">=") {
+            } else if (v.op === Operators.greaterThanOrEqualTo) {
               field["$gte"] = v.value;
-            } else if (v.op === "<=") {
+            } else if (v.op === Operators.lessThanOrEqualTo) {
               field["$lte"] = v.value;
-            } else if (v.op === "~") {
+            } else if (v.op === Operators.contains) {
               const r = new RegExp(
                 `.*${escapeRegExp(String(v.value))}.*`,
                 "gi"

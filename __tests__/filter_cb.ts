@@ -1,4 +1,4 @@
-import { addRule, toFilterCb, Filters } from "../src";
+import { addRule, toFilterCb, Filters, Operators } from "../src";
 
 interface I {
   number: number;
@@ -17,36 +17,36 @@ const t: I = {
 describe("filter cb", () => {
   it("boolean", (done) => {
     expect(
-      toFilterCb(addRule({} as Filters<I>, "boolean", "=", false))(t)
+      toFilterCb(addRule({} as Filters<I>, "boolean", Operators.equal, false))(t)
     ).toBeTruthy();
     expect(
-      toFilterCb(addRule({} as Filters<I>, "boolean", "=", true))(t)
+      toFilterCb(addRule({} as Filters<I>, "boolean", Operators.equal, true))(t)
     ).toBeFalsy();
     done();
   });
 
   it("number", (done) => {
     expect(
-      toFilterCb(addRule({} as Filters<I>, "number", "=", 5))(t)
+      toFilterCb(addRule({} as Filters<I>, "number", Operators.equal, 5))(t)
     ).toBeTruthy();
     expect(
-      toFilterCb(addRule({} as Filters<I>, "number", "=", 2))(t)
+      toFilterCb(addRule({} as Filters<I>, "number", Operators.equal, 2))(t)
     ).toBeFalsy();
     expect(
-      toFilterCb(addRule({} as Filters<I>, "number", "<", 8))(t)
+      toFilterCb(addRule({} as Filters<I>, "number", Operators.lessThan, 8))(t)
     ).toBeTruthy();
     expect(
-      toFilterCb(addRule({} as Filters<I>, "number", "<=", 5))(t)
+      toFilterCb(addRule({} as Filters<I>, "number", Operators.lessThanOrEqualTo, 5))(t)
     ).toBeTruthy();
     expect(
-      toFilterCb(addRule({} as Filters<I>, "number", ">=", 0))(t)
+      toFilterCb(addRule({} as Filters<I>, "number", Operators.greaterThanOrEqualTo, 0))(t)
     ).toBeTruthy();
     expect(
-      toFilterCb(addRule({} as Filters<I>, "number", ">", 0))(t)
+      toFilterCb(addRule({} as Filters<I>, "number", Operators.greaterThan, 0))(t)
     ).toBeTruthy();
     expect(
       toFilterCb(
-        addRule(addRule({} as Filters<I>, "number", ">", 0), "number", "<", 4)
+        addRule(addRule({} as Filters<I>, "number", Operators.greaterThan, 0), "number", Operators.lessThan, 4)
       )(t)
     ).toBeFalsy();
 
@@ -54,10 +54,10 @@ describe("filter cb", () => {
   });
   it("number_arr", (done) => {
     expect(
-      toFilterCb(addRule({} as Filters<I>, "number_arr", "=", 5))(t)
+      toFilterCb(addRule({} as Filters<I>, "number_arr", Operators.equal, 5))(t)
     ).toBeTruthy();
     expect(
-      toFilterCb(addRule({} as Filters<I>, "number_arr", "=", 4))(t)
+      toFilterCb(addRule({} as Filters<I>, "number_arr", Operators.equal, 4))(t)
     ).toBeFalsy();
     done();
   });
@@ -65,26 +65,26 @@ describe("filter cb", () => {
   it("in", (done) => {
     expect(
       toFilterCb(
-        addRule(addRule({} as Filters<I>, "number", "=", 2), "number", "=", 5)
+        addRule(addRule({} as Filters<I>, "number", Operators.equal, 2), "number", Operators.equal, 5)
       )(t)
     ).toBeTruthy();
     done();
   });
   it("string", (done) => {
     expect(
-      toFilterCb(addRule({} as Filters<I>, "string", "=", "foo"))(t)
+      toFilterCb(addRule({} as Filters<I>, "string", Operators.equal, "foo"))(t)
     ).toBeTruthy();
     expect(
-      toFilterCb(addRule({} as Filters<I>, "string", "~", "o"))(t)
+      toFilterCb(addRule({} as Filters<I>, "string", Operators.contains, "o"))(t)
     ).toBeTruthy();
     done();
   });
   it("!=", (done) => {
     expect(
-      toFilterCb(addRule({} as Filters<I>, "string", "!=", "0"))(t)
+      toFilterCb(addRule({} as Filters<I>, "string", Operators.notEqual, "0"))(t)
     ).toBeTruthy();
     expect(
-      toFilterCb(addRule({} as Filters<I>, "boolean", "!=", true))(t)
+      toFilterCb(addRule({} as Filters<I>, "boolean", Operators.notEqual, true))(t)
     ).toBeTruthy();
     done();
   });
@@ -93,13 +93,13 @@ describe("filter cb", () => {
       toFilterCb(
         addRule(
           addRule(
-            addRule({} as Filters<I>, "number", "=", 5),
+            addRule({} as Filters<I>, "number", Operators.equal, 5),
             "string",
-            "!=",
+            Operators.notEqual,
             "0"
           ),
           "number",
-          "=",
+          Operators.equal,
           2
         )
       )(t)

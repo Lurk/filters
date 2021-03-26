@@ -1,4 +1,4 @@
-import { addRule, removeRule, Filters } from "../src";
+import { addRule, removeRule, Filters, Operators } from "../src";
 
 interface I {
   string: string;
@@ -12,9 +12,9 @@ interface I {
 describe("remove rule", () => {
   it("should remove rule", (done) => {
     const f = addRule(
-      addRule({} as Filters<I>, "string", "=", "string"),
+      addRule({} as Filters<I>, "string", Operators.equal, "string"),
       "boolean_arr",
-      "=",
+      Operators.equal,
       true
     );
     const removed = removeRule(f, "string");

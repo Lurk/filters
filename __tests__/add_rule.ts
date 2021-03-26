@@ -1,4 +1,4 @@
-import { addRule, toMongoQuery, Filters } from "../src";
+import { addRule, toMongoQuery, Filters, Operators } from "../src";
 
 interface I {
   string: string;
@@ -11,25 +11,25 @@ interface I {
 
 describe("add rules", () => {
   it("values empty op", (done) => {
-    const f = addRule({} as Filters<I>, "string", "=", "string");
-    expect(f["string"]).toEqual([{ op: "=", type: "str", value: "string" }]);
+    const f = addRule({} as Filters<I>, "string", Operators.equal, "string");
+    expect(f["string"]).toEqual([{ op: Operators.equal, type: "str", value: "string" }]);
     done();
   });
   it("values ", (done) => {
-    const f = addRule({} as Filters<I>, "string", "~", "string");
-    expect(f["string"]).toEqual([{ op: "~", type: "str", value: "string" }]);
+    const f = addRule({} as Filters<I>, "string", Operators.contains, "string");
+    expect(f["string"]).toEqual([{ op: Operators.contains, type: "str", value: "string" }]);
     done();
   });
   it("values in", (done) => {
     const f = addRule(
-      addRule({} as Filters<I>, "string", "~", "fooo"),
+      addRule({} as Filters<I>, "string", Operators.contains, "fooo"),
       "string",
-      "~",
+      Operators.contains,
       "bar"
     );
     expect(f["string"]).toEqual([
-      { op: "~", type: "str", value: "fooo" },
-      { op: "~", type: "str", value: "bar" },
+      { op: Operators.contains, type: "str", value: "fooo" },
+      { op: Operators.contains, type: "str", value: "bar" },
     ]);
     expect(toMongoQuery(f).string["$in"][0].toString()).toBe("/.*fooo.*/gi");
     expect(toMongoQuery(f).string["$in"][1].toString()).toBe("/.*bar.*/gi");
@@ -38,87 +38,87 @@ describe("add rules", () => {
   it("property is array", (done) => {
     const f = addRule(
       addRule(
-        addRule({} as Filters<I>, "string_arr", "=", "bar"),
+        addRule({} as Filters<I>, "string_arr", Operators.equal, "bar"),
         "boolean_arr",
-        "=",
+        Operators.equal,
         true
       ),
       "number_arr",
-      "=",
+      Operators.equal,
       1
     );
-    expect(f["string_arr"]).toEqual([{ op: "=", type: "str", value: "bar" }]);
-    expect(f["boolean_arr"]).toEqual([{ op: "=", type: "bool", value: true }]);
-    expect(f["number_arr"]).toEqual([{ op: "=", type: "number", value: 1 }]);
+    expect(f["string_arr"]).toEqual([{ op: Operators.equal, type: "str", value: "bar" }]);
+    expect(f["boolean_arr"]).toEqual([{ op: Operators.equal, type: "bool", value: true }]);
+    expect(f["number_arr"]).toEqual([{ op: Operators.equal, type: "number", value: 1 }]);
     done();
   });
 });
 
 describe("addRule runtime checks", () => {
   it("contains filter on non string rule", (done) => {
-    expect(() => addRule({} as Filters<I>, "boolean", "~", true)).toThrow(
+    expect(() => addRule({} as Filters<I>, "boolean", Operators.contains, true)).toThrow(
       'only string fields can be filtered by "contain (~)" filter'
     );
-    expect(() => addRule({} as Filters<I>, "number", "~", 1)).toThrow(
+    expect(() => addRule({} as Filters<I>, "number", Operators.contains, 1)).toThrow(
       'only string fields can be filtered by "contain (~)" filter'
     );
-    expect(() => addRule({} as Filters<I>, "boolean_arr", "~", true)).toThrow(
+    expect(() => addRule({} as Filters<I>, "boolean_arr", Operators.contains, true)).toThrow(
       'only string fields can be filtered by "contain (~)" filter'
     );
-    expect(() => addRule({} as Filters<I>, "number_arr", "~", 1)).toThrow(
+    expect(() => addRule({} as Filters<I>, "number_arr", Operators.contains, 1)).toThrow(
       'only string fields can be filtered by "contain (~)" filter'
     );
 
     done();
   });
   it(">,<, >=, <= filters on non int rule", (done) => {
-    expect(() => addRule({} as Filters<I>, "boolean", ">", true)).toThrow(
+    expect(() => addRule({} as Filters<I>, "boolean", Operators.greaterThan, true)).toThrow(
       'only number fields can be filtered by "greater than (>)" filter'
     );
-    expect(() => addRule({} as Filters<I>, "boolean", "<", true)).toThrow(
-      'only number fields can be filtered by "lower than (<)" filter'
+    expect(() => addRule({} as Filters<I>, "boolean", Operators.lessThan, true)).toThrow(
+      'only number fields can be filtered by "less than (<)" filter'
     );
-    expect(() => addRule({} as Filters<I>, "boolean", ">=", true)).toThrow(
-      'only number fields can be filtered by "greater or equal than (>=)" filter'
+    expect(() => addRule({} as Filters<I>, "boolean", Operators.greaterThanOrEqualTo, true)).toThrow(
+      'only number fields can be filtered by "greater than or equal to (>=)" filter'
     );
-    expect(() => addRule({} as Filters<I>, "boolean", "<=", true)).toThrow(
-      'only number fields can be filtered by "lower or equal than (<=)" filter'
+    expect(() => addRule({} as Filters<I>, "boolean", Operators.lessThanOrEqualTo, true)).toThrow(
+      'only number fields can be filtered by "less than or equal to (<=)" filter'
     );
-    expect(() => addRule({} as Filters<I>, "string", ">", "true")).toThrow(
+    expect(() => addRule({} as Filters<I>, "string", Operators.greaterThan, "true")).toThrow(
       'only number fields can be filtered by "greater than (>)" filter'
     );
-    expect(() => addRule({} as Filters<I>, "string", "<", "true")).toThrow(
-      'only number fields can be filtered by "lower than (<)" filter'
+    expect(() => addRule({} as Filters<I>, "string", Operators.lessThan, "true")).toThrow(
+      'only number fields can be filtered by "less than (<)" filter'
     );
-    expect(() => addRule({} as Filters<I>, "string", ">=", "true")).toThrow(
-      'only number fields can be filtered by "greater or equal than (>=)" filter'
+    expect(() => addRule({} as Filters<I>, "string", Operators.greaterThanOrEqualTo, "true")).toThrow(
+      'only number fields can be filtered by "greater than or equal to (>=)" filter'
     );
-    expect(() => addRule({} as Filters<I>, "string", "<=", "true")).toThrow(
-      'only number fields can be filtered by "lower or equal than (<=)" filter'
+    expect(() => addRule({} as Filters<I>, "string", Operators.lessThanOrEqualTo, "true")).toThrow(
+      'only number fields can be filtered by "less than or equal to (<=)" filter'
     );
-    expect(() => addRule({} as Filters<I>, "boolean_arr", ">", true)).toThrow(
+    expect(() => addRule({} as Filters<I>, "boolean_arr", Operators.greaterThan, true)).toThrow(
       'only number fields can be filtered by "greater than (>)" filter'
     );
-    expect(() => addRule({} as Filters<I>, "boolean_arr", "<", true)).toThrow(
-      'only number fields can be filtered by "lower than (<)" filter'
+    expect(() => addRule({} as Filters<I>, "boolean_arr", Operators.lessThan, true)).toThrow(
+      'only number fields can be filtered by "less than (<)" filter'
     );
-    expect(() => addRule({} as Filters<I>, "boolean_arr", ">=", true)).toThrow(
-      'only number fields can be filtered by "greater or equal than (>=)" filter'
+    expect(() => addRule({} as Filters<I>, "boolean_arr", Operators.greaterThanOrEqualTo, true)).toThrow(
+      'only number fields can be filtered by "greater than or equal to (>=)" filter'
     );
-    expect(() => addRule({} as Filters<I>, "boolean_arr", "<=", true)).toThrow(
-      'only number fields can be filtered by "lower or equal than (<=)" filter'
+    expect(() => addRule({} as Filters<I>, "boolean_arr", Operators.lessThanOrEqualTo, true)).toThrow(
+      'only number fields can be filtered by "less than or equal to (<=)" filter'
     );
-    expect(() => addRule({} as Filters<I>, "string_arr", ">", "true")).toThrow(
+    expect(() => addRule({} as Filters<I>, "string_arr", Operators.greaterThan, "true")).toThrow(
       'only number fields can be filtered by "greater than (>)" filter'
     );
-    expect(() => addRule({} as Filters<I>, "string_arr", "<", "true")).toThrow(
-      'only number fields can be filtered by "lower than (<)" filter'
+    expect(() => addRule({} as Filters<I>, "string_arr", Operators.lessThan, "true")).toThrow(
+      'only number fields can be filtered by "less than (<)" filter'
     );
-    expect(() => addRule({} as Filters<I>, "string_arr", ">=", "true")).toThrow(
-      'only number fields can be filtered by "greater or equal than (>=)" filter'
+    expect(() => addRule({} as Filters<I>, "string_arr", Operators.greaterThanOrEqualTo, "true")).toThrow(
+      'only number fields can be filtered by "greater than or equal to (>=)" filter'
     );
-    expect(() => addRule({} as Filters<I>, "string_arr", "<=", "true")).toThrow(
-      'only number fields can be filtered by "lower or equal than (<=)" filter'
+    expect(() => addRule({} as Filters<I>, "string_arr", Operators.lessThanOrEqualTo, "true")).toThrow(
+      'only number fields can be filtered by "less than or equal to (<=)" filter'
     );
 
     done();
