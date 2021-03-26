@@ -98,8 +98,7 @@ window.history.push({ path: newUrl }, "", newUrl);
 Value can be either string, number, or boolean type.
 
 ### Operators
-Filters package uses this comparison query operators
-for every type of value:
+Filters package uses this comparison query operators:
 
 0. equals
 1. not equals
