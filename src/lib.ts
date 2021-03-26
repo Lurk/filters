@@ -193,10 +193,8 @@ export function removeRule<T extends AnyDict<T>>(
   filter: Filters<T>,
   key: keyof T
 ): Filters<T> {
-  if (filter[key]) {
-    delete filter[key];
-  }
-  return filter;
+  const {[key]: undefined, ...rest} = filter;
+  return rest as Filters<T>;
 }
 
 export function toString<T extends AnyDict<T>, K extends keyof T>(

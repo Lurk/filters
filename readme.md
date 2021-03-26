@@ -115,6 +115,14 @@ usage:
 const filterByYear = addRule({} as Filters<Book>, "year", ">", 1981);
 const filterByYearAndGenre = addRule(filter, "genre", "~", "ict")
 ```
+### removeRule
+removes rule from existing filters
+
+usage:
+```TS
+const filterByYear = removeRule(filterByYearAndGenre, "genre");
+```
+
 
 ### fromArray
 creates new filter from array

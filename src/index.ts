@@ -6,7 +6,8 @@ export {
   toMongoQuery,
   toQueryString,
   toString,
-  toFilterCb
+  toFilterCb,
+  removeRule
 } from "./lib";
 
 export type { Filters } from "./lib";
