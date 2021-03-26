@@ -83,8 +83,12 @@ and I also want to update the filter param in the browser URL to be able to send
 ```TS
 const { protocol, host, pathname, search } = window.location;
 const params = new URLSearchParams(search);
-params.set("filter", toQueryString(filter));
+const queryString = toQueryString(filter);
+params.set("filter", queryString);
 const newUrl = `${protocol}//${host}${pathname}?${params.toString()}`;
+if(newUlr.length > 2048){
+  throw new Error(`Url can not be longer than 2048 characters. Length of filters serialized to string is ${queryString.length}`)
+}
 window.history.push({ path: newUrl }, "", newUrl);
 ```
 
