@@ -19,7 +19,7 @@ interface Book {
 And we want to know which books were published after 1981.
 
 ```TS
-import {addRule, Filters, createFilterCb, Operators} from "@barhamon/filter";
+import {addRule, Filters, createFilterCb, Operators} from "@barhamon/filters";
 
 const filter = addRule({} as Filters<Book>, "year", Operators.greaterThan, 1981);
 ```
@@ -44,7 +44,7 @@ const booksPublishedAfter1981 =  bookCollection.filter(createFilterCb(filter));
 if we want to send filter as GET param to our API
 
 ```TS
-import {addRule, Filters, toQueryString, Operators} from "@barhamon/filter";
+import {addRule, Filters, toQueryString, Operators} from "@barhamon/filters";
 
 interface Book {
   name: string
@@ -61,7 +61,7 @@ await fetch(`https://apihost.com/books/?filter=${toQueryString(filter)}`)
 And let`s say on the backend we have ExpressJS and MongoDB
 ```TS
 //assuming import {api, db} from './server';
-import {Filters, parse, toMongoQuery} from "@barhamon/filter";
+import {Filters, parse, toMongoQuery} from "@barhamon/filters";
 
 interface Book {
   name: string

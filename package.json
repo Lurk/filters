@@ -1,12 +1,17 @@
 {
-  "name": "@barhamon/filter",
+  "name": "@barhamon/filters",
   "version": "0.1.0",
   "private": true,
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lurk/filters.git"
+  },
   "scripts": {
     "build": "tsc --build",
+    "prepack": "yarn build",
     "test": "jest"
   },
   "devDependencies": {
