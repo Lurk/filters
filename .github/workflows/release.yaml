@@ -1,0 +1,26 @@
+name: Release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  release: 
+    runs-on: ubuntu-latest
+    steps: 
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
+      - run: yarn test
+      - run: yarn pack --filename=package.tgz
+      - name: Upload binary to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: package.tgz
+          asset_name: package.tgz
+          tag: ${{ github.ref }}
+
