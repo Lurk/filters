@@ -194,5 +194,5 @@ const filterByYearAndGenre = fromString('{"year":[[1981,2]],"genre":[["ict":6]]}
 creates new filter from url encoded string,
 usage:
 ```TS
-const filterByYearAndGenre = fromQueryString('%7B%22year%22%3A%5B%5B1981%2C2%5D%5D%2C%22genre%22%3A%5B%5B%22ict%22%2C6%5D%5D%7D')
+const filterByYearAndGenre = fromQueryString('eyJ5ZWFyIjpbWzE5ODEsMl1dLCJnZW5yZSI6W1siaWN0Iiw2XV19')
 ```
