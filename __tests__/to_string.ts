@@ -24,7 +24,12 @@ describe("to string", () => {
   });
   it("more than one rule", (done) => {
     const f = addRule(
-      addRule(addRule({} as Filters<I>, "baz", Operators.equal, true), "foo", Operators.equal, 1),
+      addRule(
+        addRule({} as Filters<I>, "baz", Operators.equal, true),
+        "foo",
+        Operators.equal,
+        1
+      ),
       "bar",
       Operators.equal,
       "fooo"
@@ -34,7 +39,12 @@ describe("to string", () => {
   });
   it("more than one rule same name", (done) => {
     const f = addRule(
-      addRule(addRule({} as Filters<I>, "foo", Operators.equal, 1), "foo", Operators.equal, 2),
+      addRule(
+        addRule({} as Filters<I>, "foo", Operators.equal, 1),
+        "foo",
+        Operators.equal,
+        2
+      ),
       "bar",
       Operators.equal,
       "fooo"

@@ -33,7 +33,7 @@ export enum Operators {
   lessThan = 3,
   greaterThanOrEqualTo = 4,
   lessThanOrEqualTo = 5,
-  contains = 6
+  contains = 6,
 }
 
 export function isOp(val: any): val is Operators {
@@ -158,7 +158,7 @@ export function fromString<T extends AnyDict<T>>(str: string): Filters<T> {
 }
 
 export function fromQueryString<T extends AnyDict<T>>(str: string): Filters<T> {
-  return fromString(decodeURIComponent(str));
+  return fromString(Buffer.from(str, "base64").toString("utf8"));
 }
 
 export function addRule<T extends AnyDict<T>, K extends keyof T>(
@@ -175,7 +175,15 @@ export function addRule<T extends AnyDict<T>, K extends keyof T>(
     throw new Error(
       `only string fields can be filtered by "${opToText(op)}" filter`
     );
-  } else if ([Operators.greaterThan, Operators.lessThan, Operators.greaterThanOrEqualTo, Operators.lessThanOrEqualTo].includes(op) && !isNumeric(value)) {
+  } else if (
+    [
+      Operators.greaterThan,
+      Operators.lessThan,
+      Operators.greaterThanOrEqualTo,
+      Operators.lessThanOrEqualTo,
+    ].includes(op) &&
+    !isNumeric(value)
+  ) {
     throw new Error(
       `only number fields can be filtered by "${opToText(op)}" filter`
     );
@@ -201,7 +209,7 @@ export function removeRule<T extends AnyDict<T>>(
   filter: Filters<T>,
   key: keyof T
 ): Filters<T> {
-  const {[key]: undefined, ...rest} = filter;
+  const { [key]: undefined, ...rest } = filter;
   return rest as Filters<T>;
 }
 
@@ -222,7 +230,7 @@ export function toString<T extends AnyDict<T>, K extends keyof T>(
 export function toQueryString<T extends AnyDict<T>>(
   filter: Filters<T>
 ): string {
-  return encodeURIComponent(toString(filter));
+  return Buffer.from(toString(filter)).toString("base64");
 }
 
 export function toMongoQuery<T extends AnyDict<T>>(
