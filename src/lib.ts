@@ -13,6 +13,10 @@ export function isNumeric(val: any): boolean {
   );
 }
 
+export function isBigInt(val: any): boolean {
+  return typeof val === "bigint";
+}
+
 const reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
 const reHasRegExpChar = RegExp(reRegExpChar.source);
 
@@ -23,8 +27,6 @@ export function escapeRegExp(string: string) {
 }
 
 export type Dict<T> = { [key: string]: T | undefined };
-
-export type Values = string | number | boolean;
 
 export enum Operators {
   equal = 0,
@@ -86,23 +88,16 @@ export function opToText(op: Operators) {
   }
 }
 
-export type Types = "number" | "str" | "bool";
-
-export function typeToString(val: any): Types {
-  if (isString(val)) {
-    return "str";
-  } else if (isNumeric(val)) {
-    return "number";
-  } else if (isBoolean(val)) {
-    return "bool";
-  } else {
-    throw new Error(`unknown value type`);
-  }
-}
-
 type AnyDict<T> = Record<
   keyof T,
-  string | number | boolean | string[] | boolean[] | number[]
+  | string
+  | number
+  | boolean
+  | bigint
+  | string[]
+  | boolean[]
+  | number[]
+  | bigint[]
 >;
 
 type Value<T extends AnyDict<T>, K extends keyof T> = T[K] extends string[]
@@ -111,6 +106,8 @@ type Value<T extends AnyDict<T>, K extends keyof T> = T[K] extends string[]
   ? number
   : T[K] extends boolean[]
   ? boolean
+  : T[K] extends bigint[]
+  ? bigint
   : T[K];
 
 type MarshaledRule<T extends AnyDict<T>, K extends keyof T> =
@@ -118,7 +115,6 @@ type MarshaledRule<T extends AnyDict<T>, K extends keyof T> =
   | [Value<T, K>];
 
 interface IRule<T extends AnyDict<T>, K extends keyof T> {
-  type: Types;
   op: Operators;
   value: Value<T, K>;
 }
@@ -155,9 +151,7 @@ export function fromString<T extends AnyDict<T>>(str: string): Filters<T> {
   return Object.keys(f).reduce((acc: Filters<T>, key: string) => {
     return f[key].reduce(
       (acc2: Filters<T>, chunk: MarshaledRule<T, keyof T>) => {
-        const type = typeToString(chunk[0]);
         return addOrUpdateRule(acc2, key as keyof T, {
-          type,
           value: chunk[0],
           op: toOp(chunk[1] || Operators.equal),
         });
@@ -192,7 +186,7 @@ export function addRule<T extends AnyDict<T>, K extends keyof T>(
       Operators.greaterThanOrEqualTo,
       Operators.lessThanOrEqualTo,
     ].includes(op) &&
-    !isNumeric(value)
+    !(isNumeric(value) || isBigInt(value))
   ) {
     throw new Error(
       `only number fields can be filtered by "${opToText(op)}" filter`
@@ -200,7 +194,6 @@ export function addRule<T extends AnyDict<T>, K extends keyof T>(
   }
 
   return addOrUpdateRule(filter, key as keyof T, {
-    type: typeToString(value),
     value: value,
     op,
   });

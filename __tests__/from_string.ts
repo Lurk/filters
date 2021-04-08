@@ -1,4 +1,11 @@
-import { addRule, toString, fromString, Filters, fromArray, Operators } from "../src";
+import {
+  addRule,
+  toString,
+  fromString,
+  Filters,
+  fromArray,
+  Operators,
+} from "../src";
 
 interface I {
   foo: number;
@@ -14,7 +21,7 @@ describe("from string", () => {
     const foo = f["foo"];
     expect(foo).toHaveLength(1);
     if (foo) {
-      expect(foo[0]).toEqual({ op: Operators.equal, type: "number", value: 1 });
+      expect(foo[0]).toEqual({ op: Operators.equal, value: 1 });
     }
     done();
   });
@@ -28,11 +35,11 @@ describe("from string", () => {
     const f = fromString<I>(toString(filter));
     expect(f.baz).toHaveLength(1);
     if (f.baz) {
-      expect(f.baz[0]).toEqual({ op: Operators.equal, type: "bool", value: true });
+      expect(f.baz[0]).toEqual({ op: Operators.equal, value: true });
     }
     expect(f.bar).toHaveLength(1);
     if (f.bar) {
-      expect(f.bar[0]).toEqual({ op: Operators.equal, type: "bool", value: false });
+      expect(f.bar[0]).toEqual({ op: Operators.equal, value: false });
     }
     done();
   });
@@ -46,15 +53,15 @@ describe("from string", () => {
     const f = fromString<I>(toString(filter));
     expect(f.bar).toHaveLength(2);
     if (f.bar) {
-      expect(f.bar[0]).toEqual({ op: Operators.equal, type: "bool", value: true });
-      expect(f.bar[1]).toEqual({ op: Operators.equal, type: "bool", value: false });
+      expect(f.bar[0]).toEqual({ op: Operators.equal, value: true });
+      expect(f.bar[1]).toEqual({ op: Operators.equal, value: false });
     }
     done();
   });
   it("string with :", (done) => {
     const filter = addRule({} as Filters<I>, "str", Operators.equal, "bar");
     const f = fromString<I>(toString(filter));
-    expect(f.str).toEqual([{ op: Operators.equal, type: "str", value: "bar" }]);
+    expect(f.str).toEqual([{ op: Operators.equal, value: "bar" }]);
     done();
   });
   it("ops", (done) => {
@@ -71,17 +78,17 @@ describe("from string", () => {
     const f = fromString<I>(toString(filter));
 
     expect(f.foo).toEqual([
-      { op: Operators.greaterThan, type: "number", value: 1 },
-      { op: Operators.greaterThanOrEqualTo, type: "number", value: 1 },
-      { op: Operators.lessThanOrEqualTo, type: "number", value: 1 },
-      { op: Operators.lessThan, type: "number", value: 1 },
-      { op: Operators.notEqual, type: "number", value: 1 },
+      { op: Operators.greaterThan, value: 1 },
+      { op: Operators.greaterThanOrEqualTo, value: 1 },
+      { op: Operators.lessThanOrEqualTo, value: 1 },
+      { op: Operators.lessThan, value: 1 },
+      { op: Operators.notEqual, value: 1 },
     ]);
     expect(f.str).toEqual([
-      { op: Operators.equal, type: "str", value: "fooo" },
-      { op: Operators.contains, type: "str", value: "fooo" },
+      { op: Operators.equal, value: "fooo" },
+      { op: Operators.contains, value: "fooo" },
     ]);
-    expect(f.bar).toEqual([{ op: Operators.equal, type: "bool", value: true }]);
+    expect(f.bar).toEqual([{ op: Operators.equal, value: true }]);
 
     done();
   });
