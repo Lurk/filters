@@ -1,6 +1,6 @@
 {
   "name": "@barhamon/filters",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "private": false,
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
