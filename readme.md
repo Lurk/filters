@@ -19,7 +19,7 @@ interface Book {
 And we want to know which books were published after 1981.
 
 ```TS
-import {addRule, Filters, createFilterCb, Operators} from "@barhamon/filters";
+import {addRule, Filters, toFilterCb, Operators} from "@barhamon/filters";
 
 const filter = addRule({} as Filters<Book>, "year", Operators.greaterThan, 1981);
 ```
@@ -38,7 +38,7 @@ const bookCollection: Book[] = [
   {author: "Andy Weir", name: "The Martian", year: 2012, genre: ["Science Fiction"]},
 ]
 
-const booksPublishedAfter1981 =  bookCollection.filter(createFilterCb(filter));
+const booksPublishedAfter1981 =  bookCollection.filter(toFilterCb(filter));
 ```
 
 if we want to send filter as GET param to our API
