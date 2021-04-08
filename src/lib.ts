@@ -36,6 +36,16 @@ export enum Operators {
   contains = 6,
 }
 
+export const operatorsAsArray = () => [
+  { value: 0, content: "=" },
+  { value: 1, content: "!=" },
+  { value: 2, content: ">" },
+  { value: 3, content: "<" },
+  { value: 4, content: ">=" },
+  { value: 5, content: "<=" },
+  { value: 6, content: "~" },
+];
+
 export function isOp(val: any): val is Operators {
   return (
     val === Operators.equal ||

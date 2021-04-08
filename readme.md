@@ -107,6 +107,39 @@ Filters package uses this comparison query operators:
 
 there is Operators enum, so you don`t need to remember all this.
 
+### operatorsAsArray
+
+returns  
+```TS
+[
+  { value: 0, content: "=" },
+  { value: 1, content: "!=" },
+  { value: 2, content: ">" },
+  { value: 3, content: "<" },
+  { value: 4, content: ">=" },
+  { value: 5, content: "<=" },
+  { value: 6, content: "~" },
+]
+```
+This is convenient when we want to build html selector
+
+usage (react)
+```TS
+const Selector: React.FC = ()=> {
+  return (
+    <select id="operators">
+    {operatorsAsArray()
+      .map(
+        (o)=>(<option value={o.value}>{o.content}</option>)
+      )
+    }
+    </select>
+  )
+}
+
+```
+
+
 ### addRule
 adds rule to existing filters
 
