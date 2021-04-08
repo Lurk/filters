@@ -8,7 +8,8 @@ export {
   toString,
   toFilterCb,
   removeRule,
-  Operators
+  Operators,
+  operatorsAsArray
 } from "./lib";
 
 export type { Filters } from "./lib";
