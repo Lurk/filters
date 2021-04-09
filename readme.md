@@ -139,7 +139,6 @@ const Selector: React.FC = ()=> {
 
 ```
 
-
 ### addRule
 adds rule to existing filters
 
@@ -148,6 +147,7 @@ usage:
 const filterByYear = addRule({} as Filters<Book>, "year", Operators.greaterThan, 1981);
 const filterByYearAndGenre = addRule(filter, "genre", Operators.contains, "ict")
 ```
+
 ### removeRule
 removes rule from existing filters
 
@@ -181,11 +181,11 @@ will output string: '{"year":[\[1965],[1982,2]],"genre":[\["ict",6]]}'
 }
 ```
 
-
 usage:
 ```TS
 const string = toString(filterByYearAndGenre);
 ```
+
 ### toQueryString
 creates url encoded string from filter
 usage:
@@ -193,18 +193,57 @@ usage:
 const string = toQueryString(filterByYearAndGenre);
 ```
 Be aware of url length limitation. 
+
 ### toMongoQuery
 creates mongoDb query from filter,
 usage:
 ```TS
 const query = toMongoQuery(filterByYearAndGenre);
 ```
+
 ### toFilterCb
 creates callback for Array.filter from filter
+
 usage:
 ```TS
 const cb = toFilterCb(filterByYearAndGenre);
+const booksByYearAndGenre = bookCollection.filter(cb);
+
 ```
+### toArray 
+creates rules array from filter 
+
+usage (react):
+```TS
+const Rule: React.FC<{
+  value: [string, number, string | number | boolean | bigint];
+}> = ({ value: [key, op, value] }) => {
+  return (
+    <div>
+      <label htmlFor="operators">{key}</label>
+      <select id="operators">
+        {operatorsAsArray().map((o) => (
+          <option value={o.value} selected={op === o.value}>
+            {o.content}
+          </option>
+        ))}
+      </select>
+      <input value={value.toString()} />
+    </div>
+  );
+};
+
+const Filters: React.FC = () => {
+  return (
+    <form>
+      {toArray(filterByYearAndGenre).map((rule, i) => (
+        <Rule value={rule} key={i} />
+      ))}
+    </form>
+  );
+};
+```
+
 
 ### fromArray
 creates new filter from array
@@ -224,7 +263,8 @@ usage:
 const filterByYearAndGenre = fromString('{"year":[[1981,2]],"genre":[["ict":6]]}')
 ```
 ### fromQueryString
-creates new filter from url encoded string,
+creates new filter from base64 string
+
 usage:
 ```TS
 const filterByYearAndGenre = fromQueryString('eyJ5ZWFyIjpbWzE5ODEsMl1dLCJnZW5yZSI6W1siaWN0Iiw2XV19')

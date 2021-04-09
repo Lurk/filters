@@ -123,7 +123,7 @@ export type Filters<T extends AnyDict<T>> = {
   [key in keyof T]?: IRule<T, keyof T>[];
 };
 
-export type FromArrayArgumentsInterface<
+export type RulesArray<
   T extends AnyDict<T>,
   K extends keyof T
 > = [K, Operators, Value<T, K>];
@@ -200,7 +200,7 @@ export function addRule<T extends AnyDict<T>, K extends keyof T>(
 }
 
 export function fromArray<T extends AnyDict<T>>(
-  array: FromArrayArgumentsInterface<T, keyof T>[]
+  array: RulesArray<T, keyof T>[]
 ): Filters<T> {
   return array.reduce(
     (acc, v) => addRule(acc, v[0], v[1], v[2]),
@@ -343,4 +343,15 @@ function cb(query: any, element: any) {
       }
     });
   }
+}
+
+export function toArray<T extends AnyDict<T>>(
+  filter: Filters<T>
+): RulesArray<T, keyof T>[] {
+  return Object.keys(filter).reduce((acc, v) => {
+    (filter[v as keyof T] as IRule<T, keyof T>[]).forEach((element) => {
+      acc.push([v as keyof T, element.op, element.value]);
+    });
+    return acc;
+  }, [] as RulesArray<T, keyof T>[]);
 }
