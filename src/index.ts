@@ -7,6 +7,7 @@ export {
   toQueryString,
   toString,
   toFilterCb,
+  toArray,
   removeRule,
   Operators,
   operatorsAsArray
