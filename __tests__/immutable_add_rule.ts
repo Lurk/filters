@@ -11,7 +11,12 @@ interface I {
 
 describe("add rules", () => {
   it("top level", (done) => {
-    const filter = addRule({} as Filters<I>, "string", Operators.equal, "string");
+    const filter = addRule(
+      {} as Filters<I>,
+      "string",
+      Operators.equal,
+      "string"
+    );
     const filter2 = addRule(filter, "boolean", Operators.equal, true);
     expect(filter === filter2).toBeFalsy();
     const filter3 = addRule(filter, "string", Operators.equal, "true");
@@ -19,7 +24,12 @@ describe("add rules", () => {
     done();
   });
   it("key level", (done) => {
-    const filter = addRule({} as Filters<I>, "string", Operators.equal, "string");
+    const filter = addRule(
+      {} as Filters<I>,
+      "string",
+      Operators.equal,
+      "string"
+    );
     const filter2 = addRule(filter, "string", Operators.equal, "true");
     expect(filter["string"] === filter2["string"]).toBeFalsy();
     const filter3 = addRule(filter, "boolean", Operators.equal, true);

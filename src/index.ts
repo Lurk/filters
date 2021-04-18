@@ -10,7 +10,7 @@ export {
   toArray,
   removeRule,
   Operators,
-  operatorsAsArray
+  operatorsAsArray,
 } from "./lib";
 
-export type { Filters } from "./lib";
+export type { Filters, RulesArray } from "./lib";

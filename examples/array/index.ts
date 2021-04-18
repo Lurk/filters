@@ -7,7 +7,12 @@ interface Book {
   genre: string[];
 }
 
-const filter = addRule({} as Filters<Book>, "year", Operators.greaterThan, 1981);
+const filter = addRule(
+  {} as Filters<Book>,
+  "year",
+  Operators.greaterThan,
+  1981
+);
 
 const bookCollection: Book[] = [
   {

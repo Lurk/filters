@@ -17,7 +17,9 @@ const t: I = {
 describe("filter cb", () => {
   it("boolean", (done) => {
     expect(
-      toFilterCb(addRule({} as Filters<I>, "boolean", Operators.equal, false))(t)
+      toFilterCb(addRule({} as Filters<I>, "boolean", Operators.equal, false))(
+        t
+      )
     ).toBeTruthy();
     expect(
       toFilterCb(addRule({} as Filters<I>, "boolean", Operators.equal, true))(t)
@@ -36,17 +38,28 @@ describe("filter cb", () => {
       toFilterCb(addRule({} as Filters<I>, "number", Operators.lessThan, 8))(t)
     ).toBeTruthy();
     expect(
-      toFilterCb(addRule({} as Filters<I>, "number", Operators.lessThanOrEqualTo, 5))(t)
-    ).toBeTruthy();
-    expect(
-      toFilterCb(addRule({} as Filters<I>, "number", Operators.greaterThanOrEqualTo, 0))(t)
-    ).toBeTruthy();
-    expect(
-      toFilterCb(addRule({} as Filters<I>, "number", Operators.greaterThan, 0))(t)
+      toFilterCb(
+        addRule({} as Filters<I>, "number", Operators.lessThanOrEqualTo, 5)
+      )(t)
     ).toBeTruthy();
     expect(
       toFilterCb(
-        addRule(addRule({} as Filters<I>, "number", Operators.greaterThan, 0), "number", Operators.lessThan, 4)
+        addRule({} as Filters<I>, "number", Operators.greaterThanOrEqualTo, 0)
+      )(t)
+    ).toBeTruthy();
+    expect(
+      toFilterCb(addRule({} as Filters<I>, "number", Operators.greaterThan, 0))(
+        t
+      )
+    ).toBeTruthy();
+    expect(
+      toFilterCb(
+        addRule(
+          addRule({} as Filters<I>, "number", Operators.greaterThan, 0),
+          "number",
+          Operators.lessThan,
+          4
+        )
       )(t)
     ).toBeFalsy();
 
@@ -65,7 +78,12 @@ describe("filter cb", () => {
   it("in", (done) => {
     expect(
       toFilterCb(
-        addRule(addRule({} as Filters<I>, "number", Operators.equal, 2), "number", Operators.equal, 5)
+        addRule(
+          addRule({} as Filters<I>, "number", Operators.equal, 2),
+          "number",
+          Operators.equal,
+          5
+        )
       )(t)
     ).toBeTruthy();
     done();
@@ -75,16 +93,22 @@ describe("filter cb", () => {
       toFilterCb(addRule({} as Filters<I>, "string", Operators.equal, "foo"))(t)
     ).toBeTruthy();
     expect(
-      toFilterCb(addRule({} as Filters<I>, "string", Operators.contains, "o"))(t)
+      toFilterCb(addRule({} as Filters<I>, "string", Operators.contains, "o"))(
+        t
+      )
     ).toBeTruthy();
     done();
   });
   it("!=", (done) => {
     expect(
-      toFilterCb(addRule({} as Filters<I>, "string", Operators.notEqual, "0"))(t)
+      toFilterCb(addRule({} as Filters<I>, "string", Operators.notEqual, "0"))(
+        t
+      )
     ).toBeTruthy();
     expect(
-      toFilterCb(addRule({} as Filters<I>, "boolean", Operators.notEqual, true))(t)
+      toFilterCb(
+        addRule({} as Filters<I>, "boolean", Operators.notEqual, true)
+      )(t)
     ).toBeTruthy();
     done();
   });

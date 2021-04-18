@@ -8,7 +8,12 @@ interface I {
 describe("to mongo query", () => {
   it("equal", (done) => {
     const f = addRule(
-      addRule(addRule({} as Filters<I>, "foo", Operators.equal, 1), "bar", Operators.equal, "aaa"),
+      addRule(
+        addRule({} as Filters<I>, "foo", Operators.equal, 1),
+        "bar",
+        Operators.equal,
+        "aaa"
+      ),
       "baz",
       Operators.equal,
       true
@@ -17,13 +22,23 @@ describe("to mongo query", () => {
     done();
   });
   it("equal in", (done) => {
-    const f = addRule(addRule({} as Filters<I>, "foo", Operators.equal, 1), "foo", Operators.equal, 2);
+    const f = addRule(
+      addRule({} as Filters<I>, "foo", Operators.equal, 1),
+      "foo",
+      Operators.equal,
+      2
+    );
     expect(toMongoQuery(f)).toEqual({ foo: { $in: [1, 2] } });
     done();
   });
   it("not equal", (done) => {
     const f = addRule(
-      addRule(addRule({} as Filters<I>, "foo", Operators.notEqual, 1), "bar", Operators.notEqual, "aaa"),
+      addRule(
+        addRule({} as Filters<I>, "foo", Operators.notEqual, 1),
+        "bar",
+        Operators.notEqual,
+        "aaa"
+      ),
       "baz",
       Operators.notEqual,
       true
@@ -56,7 +71,12 @@ describe("to mongo query", () => {
     done();
   });
   it("greater or equal than", (done) => {
-    const f = addRule({} as Filters<I>, "foo", Operators.greaterThanOrEqualTo, 1);
+    const f = addRule(
+      {} as Filters<I>,
+      "foo",
+      Operators.greaterThanOrEqualTo,
+      1
+    );
     expect(toMongoQuery(f)).toEqual({ foo: { $gte: 1 } });
     done();
   });
@@ -73,7 +93,12 @@ describe("to mongo query", () => {
     done();
   });
   it("greater than and lower than in", (done) => {
-    const f = addRule(addRule({} as Filters<I>, "foo", Operators.greaterThan, 1), "foo", Operators.lessThan, 2);
+    const f = addRule(
+      addRule({} as Filters<I>, "foo", Operators.greaterThan, 1),
+      "foo",
+      Operators.lessThan,
+      2
+    );
     expect(toMongoQuery(f)).toEqual({ foo: { $gt: 1, $lt: 2 } });
     done();
   });

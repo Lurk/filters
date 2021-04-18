@@ -123,10 +123,11 @@ export type Filters<T extends AnyDict<T>> = {
   [key in keyof T]?: IRule<T, keyof T>[];
 };
 
-export type RulesArray<
-  T extends AnyDict<T>,
-  K extends keyof T
-> = [K, Operators, Value<T, K>];
+export type RulesArray<T extends AnyDict<T>, K extends keyof T> = [
+  K,
+  Operators,
+  Value<T, K>
+];
 
 function addOrUpdateRule<T extends AnyDict<T>, K extends keyof T>(
   filters: Filters<T>,
