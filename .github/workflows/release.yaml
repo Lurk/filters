@@ -5,13 +5,13 @@ on:
     types: [created]
 
 jobs:
-  release: 
+  release:
     runs-on: ubuntu-latest
-    steps: 
+    steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: '14.x'
+          node-version: "14.x"
       - run: yarn install --frozen-lockfile
       - run: yarn build
       - run: yarn test
@@ -23,4 +23,3 @@ jobs:
           file: package.tgz
           asset_name: package.tgz
           tag: ${{ github.ref }}
-

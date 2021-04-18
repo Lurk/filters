@@ -1,6 +1,6 @@
 # Filter
 
-Library to deal with the data filter options in a generic way. 
+Library to deal with the data filter options in a generic way.
 Written in Typescript with zero dependencies.
 
 ## Usage
@@ -59,6 +59,7 @@ await fetch(`https://apihost.com/books/?filter=${toQueryString(filter)}`)
 ```
 
 And let`s say on the backend we have ExpressJS and MongoDB
+
 ```TS
 //assuming import {api, db} from './server';
 import {Filters, parse, toMongoQuery} from "@barhamon/filters";
@@ -76,7 +77,9 @@ api.get('/books/', async (req, res) =>{
     res.json(books);
 })
 ```
+
 and we also want to update the filter param in the browser URL to be able to send the link for this page to our colleague.
+
 ```TS
 const { protocol, host, pathname, search } = window.location;
 const params = new URLSearchParams(search);
@@ -92,9 +95,11 @@ window.history.push({ path: newUrl }, "", newUrl);
 ## API
 
 ### Value types
+
 Value can be either string, number, or boolean type.
 
 ### Operators
+
 Filters package uses this comparison query operators:
 
 0. equals
@@ -109,7 +114,8 @@ there is Operators enum, so you don`t need to remember all this.
 
 ### operatorsAsArray
 
-returns  
+returns
+
 ```TS
 [
   { value: 0, content: "=" },
@@ -121,9 +127,11 @@ returns
   { value: 6, content: "~" },
 ]
 ```
+
 This is convenient when we want to build html selector
 
 usage (react)
+
 ```TS
 const Selector: React.FC = ()=> {
   return (
@@ -140,28 +148,36 @@ const Selector: React.FC = ()=> {
 ```
 
 ### addRule
+
 adds rule to existing filters
 
 usage:
+
 ```TS
 const filterByYear = addRule({} as Filters<Book>, "year", Operators.greaterThan, 1981);
 const filterByYearAndGenre = addRule(filter, "genre", Operators.contains, "ict")
 ```
 
 ### removeRule
+
 removes rule from existing filters
 
 usage:
+
 ```TS
 const filterByYear = removeRule(filterByYearAndGenre, "genre");
 ```
 
 ### toString
+
 creates JSON.string from filter with this format
+
 ```
 {"key":[[value, operator]]} or if operator is Operators.equal {"key":[[value]]}
 ```
+
 for example:
+
 ```TS
     console.log(
       toString(
@@ -173,7 +189,9 @@ for example:
       )
     );
 ```
+
 will output string: '{"year":[\[1965],[1982,2]],"genre":[\["ict",6]]}'
+
 ```JSON
 {
   "year": [[1965], [1982, 2]],
@@ -182,38 +200,49 @@ will output string: '{"year":[\[1965],[1982,2]],"genre":[\["ict",6]]}'
 ```
 
 usage:
+
 ```TS
 const string = toString(filterByYearAndGenre);
 ```
 
 ### toQueryString
+
 creates url encoded string from filter
 usage:
+
 ```TS
 const string = toQueryString(filterByYearAndGenre);
 ```
-Be aware of url length limitation. 
+
+Be aware of url length limitation.
 
 ### toMongoQuery
+
 creates mongoDb query from filter,
 usage:
+
 ```TS
 const query = toMongoQuery(filterByYearAndGenre);
 ```
 
 ### toFilterCb
+
 creates callback for Array.filter from filter
 
 usage:
+
 ```TS
 const cb = toFilterCb(filterByYearAndGenre);
 const booksByYearAndGenre = bookCollection.filter(cb);
 
 ```
-### toArray 
-creates rules array from filter 
+
+### toArray
+
+creates rules array from filter
 
 usage (react):
+
 ```TS
 const Rule: React.FC<{
   value: [string, number, string | number | boolean | bigint];
@@ -244,28 +273,35 @@ const Filters: React.FC = () => {
 };
 ```
 
-
 ### fromArray
+
 creates new filter from array
 
 usage:
+
 ```TS
 const filterByYearAndGenre = fromArray([
   ["year", Operators.greaterThan, 1981],
   ["genre", Operators.contains, "ict"]
 ]);
 ```
+
 ### fromString
+
 creates new filter from string
 
 usage:
+
 ```TS
 const filterByYearAndGenre = fromString('{"year":[[1981,2]],"genre":[["ict":6]]}')
 ```
+
 ### fromQueryString
+
 creates new filter from base64 string
 
 usage:
+
 ```TS
 const filterByYearAndGenre = fromQueryString('eyJ5ZWFyIjpbWzE5ODEsMl1dLCJnZW5yZSI6W1siaWN0Iiw2XV19')
 ```

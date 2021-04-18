@@ -205,7 +205,6 @@ describe("addRule runtime checks", () => {
           addRule({} as Filters<I>, "bigint", op as Operators, 1n);
           //@ts-ignore
           addRule({} as Filters<I>, "bigint_arr", op as Operators, 1n);
-
         });
     }).not.toThrow();
     done();
