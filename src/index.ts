@@ -13,4 +13,4 @@ export {
   operatorsAsArray
 } from "./lib";
 
-export type { Filters } from "./lib";
+export type { Filters, RulesArray } from "./lib";
