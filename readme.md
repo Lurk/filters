@@ -3,6 +3,12 @@
 Library to deal with the data filter options in a generic way.
 Written in Typescript with zero dependencies.
 
+## Playground
+
+You can play with the library in the [playground](https://filters-playground.vercel.app/).
+
+The playground itself great usage example. Check out the playground [repository](https://github.com/Lurk/filters-playground) if you are looking for examples.
+
 ## Usage
 
 let`s say that we have collection of books
