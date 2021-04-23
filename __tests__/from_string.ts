@@ -1,11 +1,4 @@
-import {
-  addRule,
-  toString,
-  fromString,
-  Filters,
-  fromArray,
-  Operators,
-} from "../src";
+import { addRule, toString, fromString, Filters, Operators } from "../src";
 
 interface I {
   foo: number;
@@ -55,7 +48,7 @@ describe("from string", () => {
     done();
   });
   it("ops", (done) => {
-    const filter = fromArray<I>([
+    const filter: Filters<I> = [
       ["bar", Operators.equal, true],
       ["foo", Operators.greaterThan, 1],
       ["foo", Operators.greaterThanOrEqualTo, 1],
@@ -64,7 +57,7 @@ describe("from string", () => {
       ["foo", Operators.notEqual, 1],
       ["str", Operators.equal, "fooo"],
       ["str", Operators.contains, "fooo"],
-    ]);
+    ];
     const f = fromString<I>(toString(filter));
     expect(f).toHaveLength(8);
     expect(f).toEqual([

@@ -1,4 +1,4 @@
-import { addRule, toString, Filters, fromArray, Operators } from "../src";
+import { addRule, toString, Filters, Operators } from "../src";
 
 interface I {
   foo: number;
@@ -53,7 +53,7 @@ describe("to string", () => {
     done();
   });
   it("different ops", (done) => {
-    const f = fromArray([
+    const f: Filters<I> = [
       ["baz", Operators.equal, true],
       ["foo", Operators.greaterThan, 1],
       ["foo", Operators.greaterThanOrEqualTo, 1],
@@ -62,7 +62,7 @@ describe("to string", () => {
       ["foo", Operators.notEqual, 1],
       ["bar", Operators.equal, "fooo"],
       ["bar", Operators.contains, "fooo"],
-    ]);
+    ];
 
     expect(toString(f)).toBe(
       '{"baz":[[true]],"foo":[[1,2],[1,4],[1,5],[1,3],[1,1]],"bar":[["fooo"],["fooo",6]]}'

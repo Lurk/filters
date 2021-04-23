@@ -188,20 +188,22 @@ export function addRule<T extends AnyDict<T>, K extends keyof T>(
   });
 }
 
-export function fromArray<T extends AnyDict<T>>(
-  array: Rule<T, keyof T>[]
-): Filters<T> {
-  return array.reduce(
-    (acc, v) => addRule(acc, v[0], v[1], v[2]),
-    [] as Filters<T>
-  );
-}
-
-export function removeRule<T extends AnyDict<T>>(
+export function removeRuleByIndex<T extends AnyDict<T>>(
   filter: Filters<T>,
   index: number
 ): Filters<T> {
   return [...filter.slice(0, index), ...filter.slice(index + 1)];
+}
+
+export function removeRule<T extends AnyDict<T>>(
+  filter: Filters<T>,
+  rule: Rule<T, keyof T>
+) {
+  const index = filter.indexOf(rule);
+  if (index > -1) {
+    return removeRuleByIndex(filter, index);
+  }
+  return filter;
 }
 
 function toMarshaled<T extends AnyDict<T>>(

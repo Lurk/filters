@@ -1,12 +1,12 @@
 export {
   addRule,
-  fromArray,
   fromString,
   fromQueryString,
   toMongoQuery,
   toQueryString,
   toString,
   toFilterCb,
+  removeRuleByIndex,
   removeRule,
   Operators,
   operatorsAsArray,
