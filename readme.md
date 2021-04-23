@@ -98,6 +98,40 @@ if(newUlr.length > 2048){
 window.history.push({ path: newUrl }, "", newUrl);
 ```
 
+and then we want to render our filters
+
+```TS
+const Rule: React.FC<{
+  value: [string, number, string | number | boolean | bigint];
+}> = ({ value: [key, op, value] }) => {
+  return (
+    <div>
+      <label htmlFor="operators">{key}</label>
+      <select id="operators">
+        {operatorsAsArray().map((o) => (
+          <option value={o.value} selected={op === o.value}>
+            {o.content}
+          </option>
+        ))}
+      </select>
+      <input value={value.toString()} />
+    </div>
+  );
+};
+
+const Filters: React.FC = () => {
+  return (
+    <form>
+      {filterByYearAndGenre.map((rule, i) => (
+        <Rule value={rule} key={i} />
+      ))}
+    </form>
+  );
+};
+```
+
+This sample uses React, but Filters are framework agnostic so you can use it with any library you like.
+
 ## API
 
 ### Value types
@@ -274,40 +308,4 @@ usage:
 
 ```TS
 const filterByYearAndGenre = fromQueryString('eyJ5ZWFyIjpbWzE5ODEsMl1dLCJnZW5yZSI6W1siaWN0Iiw2XV19')
-```
-
-### toArray
-
-creates rules array from filter
-
-usage (react):
-
-```TS
-const Rule: React.FC<{
-  value: [string, number, string | number | boolean | bigint];
-}> = ({ value: [key, op, value] }) => {
-  return (
-    <div>
-      <label htmlFor="operators">{key}</label>
-      <select id="operators">
-        {operatorsAsArray().map((o) => (
-          <option value={o.value} selected={op === o.value}>
-            {o.content}
-          </option>
-        ))}
-      </select>
-      <input value={value.toString()} />
-    </div>
-  );
-};
-
-const Filters: React.FC = () => {
-  return (
-    <form>
-      {filterByYearAndGenre.map((rule, i) => (
-        <Rule value={rule} key={i} />
-      ))}
-    </form>
-  );
-};
 ```
