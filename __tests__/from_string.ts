@@ -1,11 +1,4 @@
-import {
-  addRule,
-  toString,
-  fromString,
-  Filters,
-  fromArray,
-  Operators,
-} from "../src";
+import { addRule, toString, fromString, Filters, Operators } from "../src";
 
 interface I {
   foo: number;
@@ -15,57 +8,59 @@ interface I {
 }
 describe("from string", () => {
   it("number", (done) => {
-    const filter = addRule({} as Filters<I>, "foo", Operators.equal, 1);
+    const filter = addRule([] as Filters<I>, "foo", Operators.equal, 1);
 
     const f = fromString<I>(toString(filter));
-    const foo = f["foo"];
-    expect(foo).toHaveLength(1);
-    if (foo) {
-      expect(foo[0]).toEqual({ op: Operators.equal, value: 1 });
-    }
+    expect(f).toHaveLength(1);
+    expect(f[0]).toEqual(["foo", Operators.equal, 1]);
     done();
   });
   it("boolean", (done) => {
     const filter = addRule(
-      addRule({} as Filters<I>, "baz", Operators.equal, true),
+      addRule([] as Filters<I>, "baz", Operators.equal, true),
       "bar",
       Operators.equal,
       false
     );
     const f = fromString<I>(toString(filter));
-    expect(f.baz).toHaveLength(1);
-    if (f.baz) {
-      expect(f.baz[0]).toEqual({ op: Operators.equal, value: true });
-    }
-    expect(f.bar).toHaveLength(1);
-    if (f.bar) {
-      expect(f.bar[0]).toEqual({ op: Operators.equal, value: false });
-    }
+    expect(f).toHaveLength(2);
+    expect(f[0]).toEqual(["baz", Operators.equal, true]);
+    expect(f[1]).toEqual(["bar", Operators.equal, false]);
     done();
   });
   it("array", (done) => {
     const filter = addRule(
-      addRule({} as Filters<I>, "bar", Operators.equal, true),
+      addRule([] as Filters<I>, "bar", Operators.equal, true),
       "bar",
       Operators.equal,
       false
     );
     const f = fromString<I>(toString(filter));
-    expect(f.bar).toHaveLength(2);
-    if (f.bar) {
-      expect(f.bar[0]).toEqual({ op: Operators.equal, value: true });
-      expect(f.bar[1]).toEqual({ op: Operators.equal, value: false });
-    }
+    expect(f).toHaveLength(2);
+    expect(f[0]).toEqual(["bar", Operators.equal, true]);
+    expect(f[1]).toEqual(["bar", Operators.equal, false]);
     done();
   });
   it("string with :", (done) => {
-    const filter = addRule({} as Filters<I>, "str", Operators.equal, "bar");
+    const filter = addRule([] as Filters<I>, "str", Operators.equal, "bar:");
     const f = fromString<I>(toString(filter));
-    expect(f.str).toEqual([{ op: Operators.equal, value: "bar" }]);
+    expect(f).toEqual([["str", Operators.equal, "bar:"]]);
     done();
   });
   it("ops", (done) => {
-    const filter = fromArray<I>([
+    const filter: Filters<I> = [
+      ["bar", Operators.equal, true],
+      ["foo", Operators.greaterThan, 1],
+      ["foo", Operators.greaterThanOrEqualTo, 1],
+      ["foo", Operators.lessThanOrEqualTo, 1],
+      ["foo", Operators.lessThan, 1],
+      ["foo", Operators.notEqual, 1],
+      ["str", Operators.equal, "fooo"],
+      ["str", Operators.contains, "fooo"],
+    ];
+    const f = fromString<I>(toString(filter));
+    expect(f).toHaveLength(8);
+    expect(f).toEqual([
       ["bar", Operators.equal, true],
       ["foo", Operators.greaterThan, 1],
       ["foo", Operators.greaterThanOrEqualTo, 1],
@@ -75,21 +70,6 @@ describe("from string", () => {
       ["str", Operators.equal, "fooo"],
       ["str", Operators.contains, "fooo"],
     ]);
-    const f = fromString<I>(toString(filter));
-
-    expect(f.foo).toEqual([
-      { op: Operators.greaterThan, value: 1 },
-      { op: Operators.greaterThanOrEqualTo, value: 1 },
-      { op: Operators.lessThanOrEqualTo, value: 1 },
-      { op: Operators.lessThan, value: 1 },
-      { op: Operators.notEqual, value: 1 },
-    ]);
-    expect(f.str).toEqual([
-      { op: Operators.equal, value: "fooo" },
-      { op: Operators.contains, value: "fooo" },
-    ]);
-    expect(f.bar).toEqual([{ op: Operators.equal, value: true }]);
-
     done();
   });
 });

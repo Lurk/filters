@@ -1,4 +1,4 @@
-import { addRule, toString, Filters, fromArray, Operators } from "../src";
+import { addRule, toString, Filters, Operators } from "../src";
 
 interface I {
   foo: number;
@@ -8,24 +8,24 @@ interface I {
 
 describe("to string", () => {
   it("number", (done) => {
-    const f = addRule({} as Filters<I>, "foo", Operators.equal, 1);
+    const f = addRule([] as Filters<I>, "foo", Operators.equal, 1);
     expect(toString(f)).toBe('{"foo":[[1]]}');
     done();
   });
   it("string", (done) => {
-    const f = addRule({} as Filters<I>, "bar", Operators.equal, "fooo");
+    const f = addRule([] as Filters<I>, "bar", Operators.equal, "fooo");
     expect(toString(f)).toBe('{"bar":[["fooo"]]}');
     done();
   });
   it("boolean", (done) => {
-    const f = addRule({} as Filters<I>, "baz", Operators.equal, true);
+    const f = addRule([] as Filters<I>, "baz", Operators.equal, true);
     expect(toString(f)).toBe('{"baz":[[true]]}');
     done();
   });
   it("more than one rule", (done) => {
     const f = addRule(
       addRule(
-        addRule({} as Filters<I>, "baz", Operators.equal, true),
+        addRule([] as Filters<I>, "baz", Operators.equal, true),
         "foo",
         Operators.equal,
         1
@@ -40,7 +40,7 @@ describe("to string", () => {
   it("more than one rule same name", (done) => {
     const f = addRule(
       addRule(
-        addRule({} as Filters<I>, "foo", Operators.equal, 1),
+        addRule([] as Filters<I>, "foo", Operators.equal, 1),
         "foo",
         Operators.equal,
         2
@@ -53,7 +53,7 @@ describe("to string", () => {
     done();
   });
   it("different ops", (done) => {
-    const f = fromArray([
+    const f: Filters<I> = [
       ["baz", Operators.equal, true],
       ["foo", Operators.greaterThan, 1],
       ["foo", Operators.greaterThanOrEqualTo, 1],
@@ -62,7 +62,7 @@ describe("to string", () => {
       ["foo", Operators.notEqual, 1],
       ["bar", Operators.equal, "fooo"],
       ["bar", Operators.contains, "fooo"],
-    ]);
+    ];
 
     expect(toString(f)).toBe(
       '{"baz":[[true]],"foo":[[1,2],[1,4],[1,5],[1,3],[1,1]],"bar":[["fooo"],["fooo",6]]}'

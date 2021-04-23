@@ -1,16 +1,15 @@
 export {
   addRule,
-  fromArray,
   fromString,
   fromQueryString,
   toMongoQuery,
   toQueryString,
   toString,
   toFilterCb,
-  toArray,
+  removeRuleByIndex,
   removeRule,
   Operators,
   operatorsAsArray,
 } from "./lib";
 
-export type { Filters, RulesArray } from "./lib";
+export type { Filters, Rule } from "./lib";

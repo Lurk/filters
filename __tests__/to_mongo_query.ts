@@ -9,7 +9,7 @@ describe("to mongo query", () => {
   it("equal", (done) => {
     const f = addRule(
       addRule(
-        addRule({} as Filters<I>, "foo", Operators.equal, 1),
+        addRule([] as Filters<I>, "foo", Operators.equal, 1),
         "bar",
         Operators.equal,
         "aaa"
@@ -23,7 +23,7 @@ describe("to mongo query", () => {
   });
   it("equal in", (done) => {
     const f = addRule(
-      addRule({} as Filters<I>, "foo", Operators.equal, 1),
+      addRule([] as Filters<I>, "foo", Operators.equal, 1),
       "foo",
       Operators.equal,
       2
@@ -34,7 +34,7 @@ describe("to mongo query", () => {
   it("not equal", (done) => {
     const f = addRule(
       addRule(
-        addRule({} as Filters<I>, "foo", Operators.notEqual, 1),
+        addRule([] as Filters<I>, "foo", Operators.notEqual, 1),
         "bar",
         Operators.notEqual,
         "aaa"
@@ -52,7 +52,7 @@ describe("to mongo query", () => {
   });
   it("not equal in", (done) => {
     const f = addRule(
-      addRule({} as Filters<I>, "foo", Operators.notEqual, 1),
+      addRule([] as Filters<I>, "foo", Operators.notEqual, 1),
       "foo",
       Operators.notEqual,
       2
@@ -61,18 +61,18 @@ describe("to mongo query", () => {
     done();
   });
   it("greater than", (done) => {
-    const f = addRule({} as Filters<I>, "foo", Operators.greaterThan, 1);
+    const f = addRule([] as Filters<I>, "foo", Operators.greaterThan, 1);
     expect(toMongoQuery(f)).toEqual({ foo: { $gt: 1 } });
     done();
   });
   it("lover than", (done) => {
-    const f = addRule({} as Filters<I>, "foo", Operators.lessThan, 1);
+    const f = addRule([] as Filters<I>, "foo", Operators.lessThan, 1);
     expect(toMongoQuery(f)).toEqual({ foo: { $lt: 1 } });
     done();
   });
   it("greater or equal than", (done) => {
     const f = addRule(
-      {} as Filters<I>,
+      [] as Filters<I>,
       "foo",
       Operators.greaterThanOrEqualTo,
       1
@@ -81,12 +81,12 @@ describe("to mongo query", () => {
     done();
   });
   it("lower or equal than", (done) => {
-    const f = addRule({} as Filters<I>, "foo", Operators.lessThanOrEqualTo, 1);
+    const f = addRule([] as Filters<I>, "foo", Operators.lessThanOrEqualTo, 1);
     expect(toMongoQuery(f)).toEqual({ foo: { $lte: 1 } });
     done();
   });
   it("contains", (done) => {
-    const f = addRule({} as Filters<I>, "bar", Operators.contains, "aaa");
+    const f = addRule([] as Filters<I>, "bar", Operators.contains, "aaa");
     expect(toMongoQuery(f)).toEqual({
       bar: { $regex: `.*aaa.*`, $options: "gi" },
     });
@@ -94,7 +94,7 @@ describe("to mongo query", () => {
   });
   it("greater than and lower than in", (done) => {
     const f = addRule(
-      addRule({} as Filters<I>, "foo", Operators.greaterThan, 1),
+      addRule([] as Filters<I>, "foo", Operators.greaterThan, 1),
       "foo",
       Operators.lessThan,
       2
@@ -104,7 +104,7 @@ describe("to mongo query", () => {
   });
   it("greater or equal than and lower or equal than in", (done) => {
     const f = addRule(
-      addRule({} as Filters<I>, "foo", Operators.greaterThanOrEqualTo, 1),
+      addRule([] as Filters<I>, "foo", Operators.greaterThanOrEqualTo, 1),
       "foo",
       Operators.lessThanOrEqualTo,
       2

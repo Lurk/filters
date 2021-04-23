@@ -27,7 +27,7 @@ And we want to know which books were published after 1981.
 ```TS
 import {addRule, Filters, toFilterCb, Operators} from "@barhamon/filters";
 
-const filter = addRule({} as Filters<Book>, "year", Operators.greaterThan, 1981);
+const filter = addRule([] as Filters<Book>, "year", Operators.greaterThan, 1981);
 ```
 
 If our collection is simple array usage of filter will look like this
@@ -59,7 +59,7 @@ interface Book {
   genre: string[],
 }
 
-const filter = addRule({} as Filters<Book>, "year", Operators.greaterThan, 1981);
+const filter = addRule([] as Filters<Book>, "year", Operators.greaterThan, 1981);
 
 await fetch(`https://apihost.com/books/?filter=${toQueryString(filter)}`)
 ```
@@ -97,6 +97,40 @@ if(newUlr.length > 2048){
 }
 window.history.push({ path: newUrl }, "", newUrl);
 ```
+
+and then we want to render our filters
+
+```TS
+const Rule: React.FC<{
+  value: [string, number, string | number | boolean | bigint];
+}> = ({ value: [key, op, value] }) => {
+  return (
+    <div>
+      <label htmlFor="operators">{key}</label>
+      <select id="operators">
+        {operatorsAsArray().map((o) => (
+          <option value={o.value} selected={op === o.value}>
+            {o.content}
+          </option>
+        ))}
+      </select>
+      <input value={value.toString()} />
+    </div>
+  );
+};
+
+const Filters: React.FC = () => {
+  return (
+    <form>
+      {filterByYearAndGenre.map((rule, i) => (
+        <Rule value={rule} key={i} />
+      ))}
+    </form>
+  );
+};
+```
+
+This sample uses React, but Filters are framework agnostic so you can use it with any library you like.
 
 ## API
 
@@ -160,7 +194,7 @@ adds rule to existing filters
 usage:
 
 ```TS
-const filterByYear = addRule({} as Filters<Book>, "year", Operators.greaterThan, 1981);
+const filterByYear = addRule([] as Filters<Book>, "year", Operators.greaterThan, 1981);
 const filterByYearAndGenre = addRule(filter, "genre", Operators.contains, "ict")
 ```
 
@@ -241,42 +275,6 @@ usage:
 const cb = toFilterCb(filterByYearAndGenre);
 const booksByYearAndGenre = bookCollection.filter(cb);
 
-```
-
-### toArray
-
-creates rules array from filter
-
-usage (react):
-
-```TS
-const Rule: React.FC<{
-  value: [string, number, string | number | boolean | bigint];
-}> = ({ value: [key, op, value] }) => {
-  return (
-    <div>
-      <label htmlFor="operators">{key}</label>
-      <select id="operators">
-        {operatorsAsArray().map((o) => (
-          <option value={o.value} selected={op === o.value}>
-            {o.content}
-          </option>
-        ))}
-      </select>
-      <input value={value.toString()} />
-    </div>
-  );
-};
-
-const Filters: React.FC = () => {
-  return (
-    <form>
-      {toArray(filterByYearAndGenre).map((rule, i) => (
-        <Rule value={rule} key={i} />
-      ))}
-    </form>
-  );
-};
 ```
 
 ### fromArray
