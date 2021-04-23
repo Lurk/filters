@@ -119,32 +119,20 @@ interface IRule<T extends AnyDict<T>, K extends keyof T> {
   value: Value<T, K>;
 }
 
-export type Filters<T extends AnyDict<T>> = {
-  [key in keyof T]?: IRule<T, keyof T>[];
-};
-
-export type RulesArray<T extends AnyDict<T>, K extends keyof T> = [
+export type Rule<T extends AnyDict<T>, K extends keyof T> = [
   K,
   Operators,
   Value<T, K>
 ];
+
+export type Filters<T extends AnyDict<T>> = Rule<T, keyof T>[];
 
 function addOrUpdateRule<T extends AnyDict<T>, K extends keyof T>(
   filters: Filters<T>,
   key: K,
   rule: IRule<T, K>
 ): Filters<T> {
-  if (filters[key] && Array.isArray(filters[key])) {
-    return {
-      ...filters,
-      [key]: [...(filters[key] as IRule<T, K>[]), rule],
-    };
-  } else {
-    return {
-      ...filters,
-      [key]: [rule],
-    };
-  }
+  return [...filters, [key, rule.op, rule.value]];
 }
 
 export function fromString<T extends AnyDict<T>>(str: string): Filters<T> {
@@ -159,7 +147,7 @@ export function fromString<T extends AnyDict<T>>(str: string): Filters<T> {
       },
       acc
     );
-  }, {} as Filters<T>);
+  }, [] as Filters<T>);
 }
 
 export function fromQueryString<T extends AnyDict<T>>(str: string): Filters<T> {
@@ -201,34 +189,38 @@ export function addRule<T extends AnyDict<T>, K extends keyof T>(
 }
 
 export function fromArray<T extends AnyDict<T>>(
-  array: RulesArray<T, keyof T>[]
+  array: Rule<T, keyof T>[]
 ): Filters<T> {
   return array.reduce(
     (acc, v) => addRule(acc, v[0], v[1], v[2]),
-    {} as Filters<T>
+    [] as Filters<T>
   );
 }
 
 export function removeRule<T extends AnyDict<T>>(
   filter: Filters<T>,
-  key: keyof T
+  index: number
 ): Filters<T> {
-  const { [key]: undefined, ...rest } = filter;
-  return rest as Filters<T>;
+  return [...filter.slice(0, index), ...filter.slice(index + 1)];
 }
 
-export function toString<T extends AnyDict<T>, K extends keyof T>(
+function toMarshaled<T extends AnyDict<T>>(
   filter: Filters<T>
-) {
-  return JSON.stringify(
-    Object.keys(filter).reduce((acc: Dict<MarshaledRule<T, K>[]>, key) => {
-      //TODO wtf typescript
-      acc[key] = (filter[key as K] as IRule<T, K>[]).map((r) =>
-        r.op === Operators.equal ? [r.value] : [r.value, r.op]
-      );
-      return acc;
-    }, {})
-  );
+): Dict<MarshaledRule<T, keyof T>[]> {
+  return filter.reduce((acc, v) => {
+    const val: MarshaledRule<T, keyof T> =
+      v[1] === Operators.equal ? [v[2]] : [v[2], v[1]];
+    if (acc[v[0] as string] === undefined) {
+      acc[v[0] as string] = [val];
+    } else {
+      acc[v[0] as string]?.push(val);
+    }
+    return acc;
+  }, {} as Dict<MarshaledRule<T, keyof T>[]>);
+}
+
+export function toString<T extends AnyDict<T>>(filter: Filters<T>) {
+  return JSON.stringify(toMarshaled(filter));
 }
 
 export function toQueryString<T extends AnyDict<T>>(
@@ -240,62 +232,61 @@ export function toQueryString<T extends AnyDict<T>>(
 export function toMongoQuery<T extends AnyDict<T>>(
   filter: Filters<T>
 ): { [key in keyof T]: any } {
-  return Object.keys(filter).reduce((acc: { [key in keyof T]: any }, key) => {
-    const rule = filter[key as keyof T];
-    if (rule) {
-      if (rule.length === 1) {
-        if (rule[0].op === Operators.notEqual) {
-          acc[key as keyof T] = { $ne: rule[0].value };
-        } else if (rule[0].op === Operators.greaterThan) {
-          acc[key as keyof T] = { $gt: rule[0].value };
-        } else if (rule[0].op === Operators.lessThan) {
-          acc[key as keyof T] = { $lt: rule[0].value };
-        } else if (rule[0].op === Operators.greaterThanOrEqualTo) {
-          acc[key as keyof T] = { $gte: rule[0].value };
-        } else if (rule[0].op === Operators.lessThanOrEqualTo) {
-          acc[key as keyof T] = { $lte: rule[0].value };
-        } else if (rule[0].op === Operators.contains) {
-          acc[key as keyof T] = {
-            $regex: `.*${escapeRegExp(String(rule[0].value))}.*`,
-            $options: "gi",
-          };
-        } else {
-          acc[key as keyof T] = rule[0].value;
+  const marshaled = toMarshaled(filter);
+  return Object.keys(marshaled).reduce(
+    (acc: { [key in keyof T]: any }, key) => {
+      const rule = marshaled[key as string];
+      if (rule) {
+        if (rule.length === 1) {
+          if (rule[0][1] === Operators.notEqual) {
+            acc[key as keyof T] = { $ne: rule[0][0] };
+          } else if (rule[0][1] === Operators.greaterThan) {
+            acc[key as keyof T] = { $gt: rule[0][0] };
+          } else if (rule[0][1] === Operators.lessThan) {
+            acc[key as keyof T] = { $lt: rule[0][0] };
+          } else if (rule[0][1] === Operators.greaterThanOrEqualTo) {
+            acc[key as keyof T] = { $gte: rule[0][0] };
+          } else if (rule[0][1] === Operators.lessThanOrEqualTo) {
+            acc[key as keyof T] = { $lte: rule[0][0] };
+          } else if (rule[0][1] === Operators.contains) {
+            acc[key as keyof T] = {
+              $regex: `.*${escapeRegExp(String(rule[0][0]))}.*`,
+              $options: "gi",
+            };
+          } else {
+            acc[key as keyof T] = rule[0][0];
+          }
+        } else if (rule.length > 1) {
+          acc[key as keyof T] = rule.reduce(
+            (field: { [key: string]: any }, v) => {
+              if (v[1] === undefined) {
+                field["$in"] = field["$in"] ? [...field["$in"], v[0]] : [v[0]];
+              } else if (v[1] === Operators.notEqual) {
+                field["$nin"] = field["$nin"]
+                  ? [...field["$nin"], v[0]]
+                  : [v[0]];
+              } else if (v[1] === Operators.greaterThan) {
+                field["$gt"] = v[0];
+              } else if (v[1] === Operators.lessThan) {
+                field["$lt"] = v[0];
+              } else if (v[1] === Operators.greaterThanOrEqualTo) {
+                field["$gte"] = v[0];
+              } else if (v[1] === Operators.lessThanOrEqualTo) {
+                field["$lte"] = v[0];
+              } else if (v[1] === Operators.contains) {
+                const r = new RegExp(`.*${escapeRegExp(String(v[0]))}.*`, "gi");
+                field["$in"] = field["$in"] ? [...field["$in"], r] : [r];
+              }
+              return field;
+            },
+            {}
+          );
         }
-      } else if (rule.length > 1) {
-        acc[key as keyof T] = rule.reduce(
-          (field: { [key: string]: any }, v) => {
-            if (v.op === Operators.equal) {
-              field["$in"] = field["$in"]
-                ? [...field["$in"], v.value]
-                : [v.value];
-            } else if (v.op === Operators.notEqual) {
-              field["$nin"] = field["$nin"]
-                ? [...field["$nin"], v.value]
-                : [v.value];
-            } else if (v.op === Operators.greaterThan) {
-              field["$gt"] = v.value;
-            } else if (v.op === Operators.lessThan) {
-              field["$lt"] = v.value;
-            } else if (v.op === Operators.greaterThanOrEqualTo) {
-              field["$gte"] = v.value;
-            } else if (v.op === Operators.lessThanOrEqualTo) {
-              field["$lte"] = v.value;
-            } else if (v.op === Operators.contains) {
-              const r = new RegExp(
-                `.*${escapeRegExp(String(v.value))}.*`,
-                "gi"
-              );
-              field["$in"] = field["$in"] ? [...field["$in"], r] : [r];
-            }
-            return field;
-          },
-          {}
-        );
       }
-    }
-    return acc;
-  }, {} as { [key in keyof T]: any });
+      return acc;
+    },
+    {} as { [key in keyof T]: any }
+  );
 }
 
 export function toFilterCb<T extends AnyDict<T>>(
@@ -344,15 +335,4 @@ function cb(query: any, element: any) {
       }
     });
   }
-}
-
-export function toArray<T extends AnyDict<T>>(
-  filter: Filters<T>
-): RulesArray<T, keyof T>[] {
-  return Object.keys(filter).reduce((acc, v) => {
-    (filter[v as keyof T] as IRule<T, keyof T>[]).forEach((element) => {
-      acc.push([v as keyof T, element.op, element.value]);
-    });
-    return acc;
-  }, [] as RulesArray<T, keyof T>[]);
 }

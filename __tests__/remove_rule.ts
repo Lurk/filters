@@ -12,15 +12,15 @@ interface I {
 describe("remove rule", () => {
   it("should remove rule", (done) => {
     const f = addRule(
-      addRule({} as Filters<I>, "string", Operators.equal, "string"),
+      addRule([] as Filters<I>, "string", Operators.equal, "string"),
       "boolean_arr",
       Operators.equal,
       true
     );
-    const removed = removeRule(f, "string");
+    const removed = removeRule(f, 0);
     expect(f === removed).toBeFalsy();
-    expect(removed["string"]).toEqual(undefined);
-    expect(removed["boolean_arr"]).toHaveLength(1);
+    expect(removed).toHaveLength(1);
+    expect(removed[0][0]).toEqual("boolean_arr");
     done();
   });
 });

@@ -7,10 +7,9 @@ export {
   toQueryString,
   toString,
   toFilterCb,
-  toArray,
   removeRule,
   Operators,
   operatorsAsArray,
 } from "./lib";
 
-export type { Filters, RulesArray } from "./lib";
+export type { Filters, Rule } from "./lib";
