@@ -277,19 +277,6 @@ const booksByYearAndGenre = bookCollection.filter(cb);
 
 ```
 
-### fromArray
-
-creates new filter from array
-
-usage:
-
-```TS
-const filterByYearAndGenre = fromArray([
-  ["year", Operators.greaterThan, 1981],
-  ["genre", Operators.contains, "ict"]
-]);
-```
-
 ### fromString
 
 creates new filter from string
