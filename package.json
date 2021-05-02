@@ -12,6 +12,7 @@
   "scripts": {
     "build": "tsc --build",
     "prepack": "npm run build",
+    "prettier": "prettier --write --ignore-unknown .",
     "test": "jest",
     "prepare": "husky install"
   },
