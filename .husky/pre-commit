@@ -1,4 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-yarn test && yarn prettier --write --ignore-unknown . && git add .
+yarn test && yarn prettier --write --ignore-unknown .
