@@ -221,11 +221,11 @@ for example:
 ```TS
     console.log(
       toString(
-        fromArray([
+        [
           ["year", Operators.equal, 1965],
           ["year", Operators.greaterThan, 1982],
           ["genre", Operators.contains, "ict"],
-        ])
+        ]
       )
     );
 ```
@@ -275,19 +275,6 @@ usage:
 const cb = toFilterCb(filterByYearAndGenre);
 const booksByYearAndGenre = bookCollection.filter(cb);
 
-```
-
-### fromArray
-
-creates new filter from array
-
-usage:
-
-```TS
-const filterByYearAndGenre = fromArray([
-  ["year", Operators.greaterThan, 1981],
-  ["genre", Operators.contains, "ict"]
-]);
 ```
 
 ### fromString
