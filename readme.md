@@ -221,11 +221,11 @@ for example:
 ```TS
     console.log(
       toString(
-        fromArray([
+        [
           ["year", Operators.equal, 1965],
           ["year", Operators.greaterThan, 1982],
           ["genre", Operators.contains, "ict"],
-        ])
+        ]
       )
     );
 ```
