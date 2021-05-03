@@ -1,6 +1,6 @@
 {
   "name": "@barhamon/filters",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "private": false,
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
