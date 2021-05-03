@@ -208,6 +208,16 @@ usage:
 const filterByYear = removeRule(filterByYearAndGenre, filterByYearAndGenre[1]);
 ```
 
+### removeRuleByIndex
+
+removes rule from existing filters by index
+
+usage:
+
+```TS
+const filterByYear = removeRule(filterByYearAndGenre, 1);
+```
+
 ### toString
 
 creates JSON.string from filter with this format
