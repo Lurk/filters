@@ -205,7 +205,7 @@ removes rule from existing filters
 usage:
 
 ```TS
-const filterByYear = removeRule(filterByYearAndGenre, "genre");
+const filterByYear = removeRule(filterByYearAndGenre, filterByYearAndGenre[1]);
 ```
 
 ### toString
